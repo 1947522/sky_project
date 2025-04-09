@@ -1,0 +1,24 @@
+<form method="POST">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" name="name" required><br>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" required><br>
+
+    <label for="teamnumber">Team Number:</label>
+    <input type="text" name="teamnumber" required><br>
+
+    <label for="departmentnumber">Department Number:</label>
+    <input type="text" name="departmentnumber" required><br>
+
+    <button type="submit">Sign Up</button>
+</form>
+
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
