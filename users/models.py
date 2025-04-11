@@ -7,6 +7,7 @@ class Employee(models.Model):
     departmentnumber = models.CharField(max_length=50)
     registered = models.BooleanField(default=False)
 
+
     def clean(self):
         # Custom validation for email domain
         if not self.email.endswith('@sky.net'):

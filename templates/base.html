@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="logo">
+        </div>
+    </header>
+    <div class="content-container">
+        {% block content %} {% endblock %}
+    </div>
+</body>
+</html>

@@ -1,24 +1,40 @@
-<form method="POST">
-    {% csrf_token %}
-    <label for="name">Name:</label>
-    <input type="text" name="name" required><br>
+{% extends 'base.html' %}
 
-    <label for="email">Email:</label>
-    <input type="email" name="email" required><br>
+{% block content %}
+<body>
+    <div class="signup-container">
+        <div class="form-container">
+                <h2>Sign Up</h2>
 
-    <label for="teamnumber">Team Number:</label>
-    <input type="text" name="teamnumber" required><br>
+            <!-- Display any messages -->
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-    <label for="departmentnumber">Department Number:</label>
-    <input type="text" name="departmentnumber" required><br>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="name">Name:</label>
+                <input type="text" name="name" required><br>
 
-    <button type="submit">Sign Up</button>
-</form>
+                <label for="email">Email:</label>
+                <input type="email" name="email" required><br>
 
-{% if messages %}
-    <ul>
-    {% for message in messages %}
-        <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
+                <label for="teamnumber">Team Number:</label>
+                <input type="text" name="teamnumber" required><br>
+
+                <label for="departmentnumber">Department Number:</label>
+                <input type="text" name="departmentnumber" required><br>
+
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

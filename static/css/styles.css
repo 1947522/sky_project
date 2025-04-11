@@ -1,0 +1,86 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    position: relative;
+}
+
+header {
+    position: absolute; /* Positioning the logo relative to the body */
+    top: 10px;  /* Adjust the top distance */
+    left: 20px;  /* Adjust the left distance to place logo at the top left */
+}
+
+.logo-container {
+    margin-top: 20px;
+}
+
+.logo {
+    max-width: 150px;  /* Set the size of the logo */
+    height: auto;
+}
+
+.login-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+    margin-top: 60px;
+    border: 1px solid #ddd; /* Add a border around the form */
+}
+
+.signup-container {
+    background-color: white;
+    padding: 40px;  /* Add padding around the form */
+    border-radius: 8px;  /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Subtle shadow around the box */
+    width: 420px;  /* Set the width of the form box */
+    text-align: center;  /* Center content */
+    box-sizing: border-box;  /* Make sure padding is inside the box */
+    margin-top: 60px;  /* Space from the top */
+    border: px solid #ddd;  /* Border around the form */
+}
+
+h2 {
+    font-size: 24px;  /* Increased font size for title */
+    margin-bottom: 30px;  /* More space between title and form */
+    color: #333;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"]{
+    width: 100%;
+    padding: 15px;  /* Increased padding for larger input fields */
+    margin: 12px 0;  /* More space between input fields */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;  /* Increased font size for inputs */
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4A90E2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+button:hover {
+    background-color: #357ABD;
+}
