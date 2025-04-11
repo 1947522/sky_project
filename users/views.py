@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
+from .forms import EmployeeForm
 from .models import Employee
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
+
 
 
 def signup(request):
@@ -12,22 +14,42 @@ def signup(request):
         name = request.POST.get('name')
         teamnumber = request.POST.get('teamnumber')
         departmentnumber = request.POST.get('departmentnumber')
+        form = EmployeeForm(request.POST)
 
-        # Create an Employee instance
-        employee = Employee(email=email, name=name, teamnumber=teamnumber, departmentnumber=departmentnumber)
+        if form.is_valid():
+            email = form.cleaned_data['email']
 
-        try:
-            employee.clean()
-            employee.registered = True
-            # Save the employee if validation is successful
-            employee.save()
-            messages.success(request, 'You have successfully signed up.')
-            return redirect('home')  # Redirect to a home or success page
+            try:
+                employee = Employee.objects.get(email=email)
 
-        except ValidationError as e:
-            messages.error(request, e.message)  # Display the validation error
+                if employee.registered:
+                    messages.error(request, 'Email already registered')
+                    return redirect('signup')
+                else:
+                    employee.registered = True
+                    employee.save()
+                    messages.success(request, 'Email successfully registered')
+                    return redirect('login')
 
-    return render(request, 'signup.html')
+            except Employee.DoesNotExist:
+                # Create an Employee instance
+                employee = Employee(
+                    email=email,
+                    name=name,
+                    teamnumber=teamnumber,
+                    departmentnumber=departmentnumber,
+                    registered=True
+                )
+                employee.save()
+                messages.success(request, 'Email successfully registered')
+                return redirect('login')
+        else:
+            print(form.errors)
+            messages.error(request, 'Employee already registered')
+    else:
+        form = EmployeeForm()
+
+    return render(request, 'signup.html', {'form': form})
 
 
 def login_view(request):
@@ -44,20 +66,27 @@ def login_view(request):
 
             if user is not None:
                 # If the user is authenticated, log the user in
-                login(request, user)
-                messages.success(request, 'You have successfully logged in.')
-                return redirect('home')  # Redirect to a home or success page
+                try:
+                    employee = Employee.objects.get(email=user.email)
+                    if employee.registered:
+                        login(request, user)
+                        messages.success(request, 'You have successfully logged in.')
+                        return redirect('home')  # Redirect to a home or success page
+                    else:
+                        messages.error(request, 'Employee is not registered yet.')
+                        return redirect('login')
+                except Employee.DoesNotExist:
+                    messages.error(request, 'Employee does not exist')
+                    return redirect('login')
             else:
-                # If authentication fails
                 messages.error(request, 'Invalid username or password')
         else:
-            # If form is not valid
-            messages.error(request, 'Invalid username or password')
-
+            messages.error(request, 'dbnjghdjnda')
     else:
         form = AuthenticationForm()
 
     return render(request, 'login.html', {'form': form})
+
 
 def home_view(request):
     return render(request, 'home.html')
