@@ -19,3 +19,8 @@ class EmployeeForm(forms.ModelForm):
         if not departmentnumber.isalnum():
             raise ValidationError('Department number must only contain numbers and letters.')
         return departmentnumber
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = ['departmentName']
