@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
-
+from .forms import DepartmentForm
+from .models import Department
 
 
 def signup(request):
@@ -90,3 +91,17 @@ def login_view(request):
 
 def home_view(request):
     return render(request, 'home.html')
+    from django.shortcuts import render, redirect
+
+
+
+def department_list(request):
+    departments = Department.objects.all()
+    return render(request, 'departments/department_list.html', {'departments': departments})
+
+def department_create(request):
+    form = DepartmentForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('department-list')
+    return render(request, 'departments/department_form.html', {'form': form})
