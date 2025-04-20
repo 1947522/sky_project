@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sky_project',
-    'users.apps.UsersConfig',
+    'users.apps.UsersConfig'
+    
+    
 ]
 
 MIDDLEWARE = [
