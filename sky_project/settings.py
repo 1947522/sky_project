@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sky_project',
-    'users.apps.UsersConfig',
-    'teams.apps.TeamsConfig',
+    'users.apps.UsersConfig'
+    
     
 ]
 
