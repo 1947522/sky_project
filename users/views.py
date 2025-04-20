@@ -91,8 +91,7 @@ def login_view(request):
 
 def home_view(request):
     return render(request, 'home.html')
-    from django.shortcuts import render, redirect
-
+    
 
 
 def department_list(request):

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sky_project',
     'users.apps.UsersConfig',
+    'teams.apps.TeamsConfig',
+    
 ]
 
 MIDDLEWARE = [

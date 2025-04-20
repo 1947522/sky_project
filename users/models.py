@@ -36,7 +36,7 @@ class Department(models.Model):
         self.departmentName = name
         self.save()
 
-   def assigned_teams(self):
+    def assigned_teams(self):
         return self.team_set.all()  
 
 
