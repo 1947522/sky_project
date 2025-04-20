@@ -1,21 +1,23 @@
 from django import forms
 from .models import Employee
-from django.core.exceptions import ValidationError
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeSignupForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            self.add_error('confirm_password', "Passwords do not match.")
+
+
+class AdminUserCreationForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ['name', 'email', 'teamnumber', 'departmentnumber']
-
-    def clean_teamnumber(self):
-        teamnumber = self.cleaned_data['teamnumber']
-        if not teamnumber.isdigit():
-            raise ValidationError('Team number must only contain numbers.')
-        return teamnumber
-
-    def clean_departmentnumber(self):
-        departmentnumber = self.cleaned_data['departmentnumber']
-        if not departmentnumber.isalnum():
-            raise ValidationError('Department number must only contain numbers and letters.')
-        return departmentnumber
+        fields = ['name', 'email', 'teamnumber', 'departmentnumber', 'role']

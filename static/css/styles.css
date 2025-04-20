@@ -1,5 +1,3 @@
-/* styles.css */
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f3f3f3;
@@ -13,9 +11,9 @@ body {
 }
 
 header {
-    position: absolute; /* Positioning the logo relative to the body */
-    top: 10px;  /* Adjust the top distance */
-    left: 20px;  /* Adjust the left distance to place logo at the top left */
+    position: absolute;
+    top: 10px;
+    left: 20px;
 }
 
 .logo-container {
@@ -23,7 +21,7 @@ header {
 }
 
 .logo {
-    max-width: 150px;  /* Set the size of the logo */
+    max-width: 150px;
     height: auto;
 }
 
@@ -36,24 +34,24 @@ header {
     text-align: center;
     box-sizing: border-box;
     margin-top: 60px;
-    border: 1px solid #ddd; /* Add a border around the form */
+    border: 1px solid #ddd;
 }
 
 .signup-container {
     background-color: white;
-    padding: 40px;  /* Add padding around the form */
-    border-radius: 8px;  /* Rounded corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Subtle shadow around the box */
-    width: 420px;  /* Set the width of the form box */
-    text-align: center;  /* Center content */
-    box-sizing: border-box;  /* Make sure padding is inside the box */
-    margin-top: 60px;  /* Space from the top */
-    border: px solid #ddd;  /* Border around the form */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 420px;
+    text-align: center;
+    box-sizing: border-box;
+    margin-top: 60px;
+    border: px solid #ddd;
 }
 
 h2 {
-    font-size: 24px;  /* Increased font size for title */
-    margin-bottom: 30px;  /* More space between title and form */
+    font-size: 24px;
+    margin-bottom: 30px;
     color: #333;
 }
 
@@ -61,11 +59,11 @@ input[type="text"],
 input[type="password"],
 input[type="email"]{
     width: 100%;
-    padding: 15px;  /* Increased padding for larger input fields */
-    margin: 12px 0;  /* More space between input fields */
+    padding: 15px;
+    margin: 12px 0;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 16px;  /* Increased font size for inputs */
+    font-size: 16px;
     box-sizing: border-box;
 }
 
@@ -84,3 +82,21 @@ button {
 button:hover {
     background-color: #357ABD;
 }
+
+
+.homepage-container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.welcome-box h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-box h2 {
+    font-size: 1.5rem;
+    color: gray;
+}
+
+

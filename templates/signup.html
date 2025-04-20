@@ -1,40 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<body>
-    <div class="signup-container">
-        <div class="form-container">
-                <h2>Sign Up</h2>
+<div class="signup-container">
+    <div class="form-container">
+        <h2>Sign Up</h2>
 
-            <!-- Display any messages -->
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li class="{{ message.tags }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-            <form method="POST">
-                {% csrf_token %}
-                <label for="name">Name:</label>
-                <input type="text" name="name" required><br>
+        <form method="POST">
+            {% csrf_token %}
 
-                <label for="email">Email:</label>
-                <input type="email" name="email" required><br>
+            {{ form.non_field_errors }}
 
-                <label for="teamnumber">Team Number:</label>
-                <input type="text" name="teamnumber" required><br>
+            <label for="name">Name:</label>
+            {{ form.name }}<br>
 
-                <label for="departmentnumber">Department Number:</label>
-                <input type="text" name="departmentnumber" required><br>
+            <label for="email">Email:</label>
+            {{ form.email }}<br>
 
-                <button type="submit">Sign Up</button>
-            </form>
+            <label for="password">Password:</label>
+            {{ form.password }}<br>
 
-            <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
-        </div>
+            <label for="confirm_password">Confirm Password:</label>
+            {{ form.confirm_password }}<br>
+
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
     </div>
-</body>
-
+</div>
 {% endblock %}

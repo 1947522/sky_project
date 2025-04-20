@@ -6,7 +6,6 @@
 <head>
     {% load static %}
     <title>Login</title>
-
 </head>
 
 <body>
@@ -25,7 +24,12 @@
 
             <form method="POST">
                 {% csrf_token %}
-                {{ form.as_p }} <!-- This will render form fields like email and password -->
+                <label for="username">Email:</label>
+                <input type="email" name="username" required><br>
+
+                <label for="password">Password:</label>
+                <input type="password" name="password" required><br>
+
                 <button type="submit" class="btn-signin">Sign In</button>
             </form>
 
