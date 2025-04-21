@@ -1,6 +1,5 @@
 from django import forms
-from .models import Employee
-
+from .models import Employee, Department
 
 class EmployeeSignupForm(forms.Form):
     name = forms.CharField(max_length=100)
@@ -21,3 +20,8 @@ class AdminUserCreationForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['name', 'email', 'teamnumber', 'departmentnumber', 'role']
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = ['departmentName']
