@@ -33,3 +33,23 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.email
+    
+class Department(models.Model):
+    departmentId = models.AutoField(primary_key=True)
+    departmentName = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.departmentName
+
+    def get_department_details(self):
+        return {
+            'id': self.departmentId,
+            'name': self.departmentName
+        }
+
+    def set_department_details(self, name):
+        self.departmentName = name
+        self.save()
+
+    def assigned_teams(self):
+        return self.team_set.all()  
