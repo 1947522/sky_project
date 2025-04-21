@@ -1,0 +1,4 @@
+# Byte-compiled / optimized / DLL files
+#ignores all .pyc files in any directory that will be caused conflict with the .py files
+__pycache__/  
+*.py[cod]
