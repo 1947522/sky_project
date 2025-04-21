@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .forms import EmployeeSignupForm, AdminUserCreationForm
 from .models import Employee
 from django.contrib import messages
+from .forms import DepartmentForm
+from .models import Department
 
 
 def signup(request):
@@ -115,3 +117,14 @@ def home_view(request):
 
 def departmentleader_view(request):
     return render(request, 'departmentleader.html')
+
+def department_list(request):
+    departments = Department.objects.all()
+    return render(request, 'departments/department_list.html', {'departments': departments})
+
+def department_create(request):
+    form = DepartmentForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('department-list')
+    return render(request, 'departments/department_form.html', {'form': form})
