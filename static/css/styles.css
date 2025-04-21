@@ -98,5 +98,16 @@ button:hover {
     font-size: 1.5rem;
     color: gray;
 }
-
-
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #4A90E2;
+    border-bottom: 1px solid #ddd;
+}

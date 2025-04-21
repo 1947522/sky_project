@@ -112,3 +112,6 @@ def home_view(request):
         'name': employee.name,
         'role': employee.role,
     })
+
+def departmentleader_view(request):
+    return render(request, 'departmentleader.html')
