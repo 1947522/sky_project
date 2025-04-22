@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import EmployeeSignupForm, AdminUserCreationForm
-from .models import Employee
+from .forms import EmployeeSignupForm, AdminUserCreationForm,DepartmentForm
+from .models import Employee,Team, Department
 from django.contrib import messages
-from .forms import DepartmentForm
-from .models import Department
+
+
 
 
 def signup(request):
@@ -115,9 +115,31 @@ def home_view(request):
         'role': employee.role,
     })
 
-def departmentleader_view(request):
-    return render(request, 'departmentleader.html')
+def department_hub_view(request):
+    selected_department = None
+    selected_team = None
 
+    # Handle form submission
+    if request.method == 'POST':
+        department_id = request.POST.get('departmentId')
+        team_id = request.POST.get('teamId')
+
+        if department_id:
+            selected_department = Department.objects.get(id=department_id)
+
+        if team_id:
+            selected_team = Team.objects.get(id=team_id)
+
+    # Fetch departments and teams for dropdowns
+    departments = Department.objects.all()
+    teams = Team.objects.all()
+
+    return render(request, 'department_team_summary.html', {
+        'departments': departments,
+        'teams': teams,
+        'selected_department': selected_department,
+        'selected_team': selected_team
+    })
 def department_list(request):
     departments = Department.objects.all()
     return render(request, 'departments/department_list.html', {'departments': departments})

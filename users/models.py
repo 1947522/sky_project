@@ -53,3 +53,10 @@ class Department(models.Model):
 
     def assigned_teams(self):
         return self.team_set.all()  
+class Team(models.Model):
+    teamId = models.AutoField(primary_key=True)
+    teamName = models.CharField(max_length=100)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='teams')
+
+    def __str__(self):
+        return self.teamName
