@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sky Department Hub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="department-hub-container">
+        <header>
+            <div class="logo">Logo</div>
+            <div class="nav-links">
+                <a href="#">Team Performance</a>
+                <a href="#">Profile</a>
+            </div>
+            <div class="share-icon">
+                <a href="#">&#8599;</a>
+            </div>
+        </header>
+
+        <div class="hero">
+            <div class="hero-image">
+                <img src="{% static 'images/SkyHero.png' %}" alt="Hero Image">
+            </div>
+        </div>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 Sky Department Hub. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

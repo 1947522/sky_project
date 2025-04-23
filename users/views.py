@@ -125,16 +125,16 @@ def department_hub_view(request):
         team_id = request.POST.get('teamId')
 
         if department_id:
-            selected_department = Department.objects.get(id=department_id)
+            selected_department = Department.objects.get(departmentId=department_id)
 
         if team_id:
-            selected_team = Team.objects.get(id=team_id)
+            selected_team = Team.objects.get(teamId=team_id)
 
     # Fetch departments and teams for dropdowns
     departments = Department.objects.all()
     teams = Team.objects.all()
 
-    return render(request, 'department_team_summary.html', {
+    return render(request, 'department_hub.html', {
         'departments': departments,
         'teams': teams,
         'selected_department': selected_department,

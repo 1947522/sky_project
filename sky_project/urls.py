@@ -21,5 +21,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),  # Include our accounts app's URLs
     # path('departments/', include('departments.urls')),
-    path('departmentleader/', include('users.urls')),
 ]
