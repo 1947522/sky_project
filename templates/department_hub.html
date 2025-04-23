@@ -1,0 +1,52 @@
+{% extends 'department_hub_base.html' %}
+
+{% block title %}Sky Department Hub{% endblock %}
+
+{% block content %}
+    
+    <div class="selection-section">
+        <!-- Department selection form -->
+        <form method="POST"  class="selection-box">
+            {% csrf_token %}
+            <h3>Department</h3>
+            <select name="departmentId" required>
+                <option value="">Select Department</option>
+                {% for department in departments %}
+                    <option value="{{ department.departmentId }}">{{ department.departmentName }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="view-button">View Department Summary</button>
+        </form>
+
+        <!-- Team selection form -->
+        <form method="POST" class="selection-box">   
+            {% csrf_token %}
+            <h3> Team </h3>
+            <select name="teamId" required>
+                <option value="">Select Team</option>
+                {% for team in teams %}
+                    <option value="{{ team.teamId }}">{{ team.teamName }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="view-button">View Team Summary</button>
+        </form>
+    </div>
+
+    <div class="summary-section">
+        {% if selected_department %}
+            <div class="summary-card">
+                <h3> Department Summary </h3>
+                <p><strong>Name:</strong> {{ selected_department.departmentName }}</p>
+                <!-- More details here -->
+            </div>
+        {% endif %}
+
+        {% if selected_team %}
+            <div class="summary-card">
+                <h3> Team Summary </h3>
+                <p><strong>Name:</strong> {{ selected_team.teamName }}</p>
+                <!-- More details here -->
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
