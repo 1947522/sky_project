@@ -142,11 +142,13 @@ def department_hub_view(request):
     })
 def department_list(request):
     departments = Department.objects.all()
-    return render(request, 'departments/department_list.html', {'departments': departments})
+    return  render(request, 'department_list.html', {'departments': departments})
+
 
 def department_create(request):
     form = DepartmentForm(request.POST or None)
     if form.is_valid():
         form.save()
         return redirect('department-list')
-    return render(request, 'departments/department_form.html', {'form': form})
+
+    return render(request, 'department_form.html', {'form': form})
