@@ -11,6 +11,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', views.login_view, name='login'),
     path('admin_page/', views.admin_page, name='admin_page'),
+
     path('departmentleader/', views.department_hub_view, name='departmentleader'),
     path('departments/', views.department_list, name='department-list'),
     path('departments/create/', views.department_create, name='department-create'),

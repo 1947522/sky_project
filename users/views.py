@@ -65,10 +65,21 @@ def login_view(request):
 
             if employee.check_password(password):
                 request.session['logged_in_email'] = employee.email
+                request.session['role'] = employee.role
                 messages.success(request, 'Login successful.')
 
-                if employee.role.lower() == 'admin':
+                role = employee.role.lower()
+
+                if role == 'admin':
                     return redirect('admin_page')
+                elif role == 'departmentleader':
+                    return redirect('departmentleader')
+                elif role == 'teamleader':
+                    return redirect('team_summary')  # adjust if needed
+                elif role == 'seniormanager':
+                    return redirect('org_summary')   # adjust if needed
+                elif role == 'engineer':
+                    return redirect('healthcheck')   # adjust if needed
                 else:
                     return redirect('home')
 
@@ -79,14 +90,12 @@ def login_view(request):
         except Employee.DoesNotExist:
             messages.error(request, 'No employee found with that email.')
             return redirect('login')
-    else:
-        form = {}
 
-    return render(request, 'login.html', {'form': form})
-
+    return render(request, 'login.html')
 
 #def home_view(request):
 # return render(request, 'home.html')
+
 
 def admin_page(request):
     if request.method == 'POST':
@@ -110,36 +119,70 @@ def home_view(request):
 
     employee = Employee.objects.get(email=email)
 
+    # # Redirect based on the role of the employee
+    # if employee.role.lower() == 'admin':
+    #     return redirect('admin_page')  # Redirect to admin page
+    # elif employee.role.lower() == 'departmentleader':
+    #     return redirect('departmentleader')  # Redirect to department leader page
+    # elif employee.role.lower() == 'teamleader':
+    #     return redirect('team_summary')  # Redirect to team summary page
+    # elif employee.role.lower() == 'seniormanager':
+    #     return redirect('org_summary')  # Redirect to senior manager summary page
+    # elif employee.role.lower() == 'engineer':
+    #     return redirect('healthcheck')  # Redirect to engineer page
+    # else:
     return render(request, 'home.html', {
-        'name': employee.name,
-        'role': employee.role,
-    })
+            'name': employee.name,
+            'role': employee.role,
+        })
 
 def department_hub_view(request):
-    selected_department = None
-    selected_team = None
+    email = request.session.get('logged_in_email')
+    if not email:
+        return redirect('login')
 
-    # Handle form submission
-    if request.method == 'POST':
-        department_id = request.POST.get('departmentId')
-        team_id = request.POST.get('teamId')
+    try:
+        employee = Employee.objects.get(email=email)
 
-        if department_id:
-            selected_department = Department.objects.get(departmentId=department_id)
+        if employee.role.lower() != 'departmentleader':
+            messages.error(request, 'Access denied: not a Department Leader.')
+            return redirect('login')
 
-        if team_id:
-            selected_team = Team.objects.get(teamId=team_id)
+        user_department_id = employee.departmentnumber
+        departments = Department.objects.all()
 
-    # Fetch departments and teams for dropdowns
-    departments = Department.objects.all()
-    teams = Team.objects.all()
+        selected_department = None
+        selected_team = None
+        teams = []
+        show_teams = False  # Flag to indicate if teams should be shown
 
-    return render(request, 'department_hub.html', {
-        'departments': departments,
-        'teams': teams,
-        'selected_department': selected_department,
-        'selected_team': selected_team
-    })
+        if request.method == 'POST':
+            department_id = request.POST.get('departmentId')
+            team_id = request.POST.get('teamId')
+
+            if department_id:
+                selected_department = Department.objects.filter(departmentId=department_id).first()
+
+                # Show teams only if selected department is user's own
+                if str(selected_department.departmentId) == str(user_department_id):
+                    teams = Team.objects.filter(department=selected_department)
+                    show_teams = True
+
+            if team_id and show_teams:
+                selected_team = Team.objects.filter(teamId=team_id).first()
+
+        return render(request, 'department_hub.html', {
+            'departments': departments,
+            'teams': teams,
+            'selected_department': selected_department,
+            'selected_team': selected_team,
+            'show_teams': show_teams
+        })
+
+    except Employee.DoesNotExist:
+        messages.error(request, 'User not found.')
+        return redirect('login')
+
 def department_list(request):
     departments = Department.objects.all()
     return  render(request, 'department_list.html', {'departments': departments})
