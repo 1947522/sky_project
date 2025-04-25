@@ -1,5 +1,5 @@
 from django import forms
-from .models import Employee, Department
+from .models import Employee, Department,Vote
 
 class EmployeeSignupForm(forms.Form):
     name = forms.CharField(max_length=100)
@@ -25,3 +25,13 @@ class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
         fields = ['departmentName']
+
+class VoteForm(forms.ModelForm):
+    class Meta:
+        model = Vote
+        fields = ['traffic_light', 'progress', 'comment']
+        widgets = {
+            'traffic_light': forms.RadioSelect,
+            'progress': forms.Select,
+            'comment': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Optional comment...'})
+        }

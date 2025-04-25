@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import EmployeeSignupForm, AdminUserCreationForm,DepartmentForm
-from .models import Employee,Team, Department
+from .models import Employee,Team, Department,Vote,HealthCard
 from django.contrib import messages
 
 
@@ -75,11 +75,11 @@ def login_view(request):
                 elif role == 'departmentleader':
                     return redirect('departmentleader')
                 elif role == 'teamleader':
-                    return redirect('team_summary')  # adjust if needed
+                    return redirect('healthcheck')  # adjust if needed
                 elif role == 'seniormanager':
                     return redirect('org_summary')   # adjust if needed
                 elif role == 'engineer':
-                    return redirect('healthcheck')   # adjust if needed
+                    return redirect('engineer')   # adjust if needed
                 else:
                     return redirect('home')
 
@@ -195,3 +195,78 @@ def department_create(request):
         return redirect('department-list')
 
     return render(request, 'department_form.html', {'form': form})
+def vote_view(request):
+    email = request.session.get('logged_in_email')
+    if not email:
+        return redirect('login')  # Redirect to login if no session email
+
+    try:
+        # Get logged-in employee
+        employee = Employee.objects.get(email=email)
+
+        # Allow only engineers and teamleaders to vote
+        if employee.role not in ['engineer', 'teamleader']:
+            messages.error(request, "You don't have permission to vote on healthcards.")
+            return redirect('login')
+
+        # Get the team the employee belongs to (this will be their default team)
+        team = Team.objects.get(teamId=employee.teamnumber)
+
+        # Get relevant healthcards for the team
+        team_healthcards = HealthCard.objects.filter(team__teamId=employee.teamnumber)
+
+        if request.method == 'POST':
+            for card in team_healthcards:
+                traffic_light = request.POST.get(f'traffic_light_{card.id}')
+                progress = request.POST.get(f'progress_{card.id}')
+                comment = request.POST.get(f'comment_{card.id}', '')
+
+                if traffic_light and progress:
+                    Vote.objects.create(
+                        employee=employee,
+                        healthcard=card,
+                        traffic_light=traffic_light,
+                        progress=progress,
+                        comment=comment
+                    )
+
+            messages.success(request, "Your votes have been submitted successfully!")
+            return redirect('healthcheck')  # Use correct name from urls.py
+
+        # GET request — render voting page with the default team displayed
+        return render(request, 'vote/voting.html', {
+            'employee': employee,
+            'team': team,  # Pass the team context to display the default team
+            'healthcards': team_healthcards,
+        })
+
+    except Employee.DoesNotExist:
+        messages.error(request, "Employee not found.")
+        return redirect('login')
+
+
+def engineer_hub_view(request):
+    return render(request, 'engineer.html')
+
+
+def health_check(request):
+    questions = [
+        "How do you feel about your current workload?",
+        "How do you feel about the team's collaboration?",  
+        "How do you feel about the team's communication?",
+        "How do you feel about the team's morale?",
+        "How do you feel about the team's productivity?",
+    ]
+    # Get the current question number from the URL, default to 1 if not provided
+    question_number = int(request.GET.get('q', 1))  # Default to question 1 if 'q' is not in the URL
+    # Ensure the question number is within the valid range
+    if question_number < 1 or question_number > len(question):
+        question_number = 1  # Reset to the first question if out of range
+    # Get the specific question based on the question number
+    question = questions[question_number - 1]
+    total_questions = len(questions)  # Total number of questions
+    return render(request, 'voting.html', {
+        'question': question,
+        'question_number': question_number,
+        'total_questions': total_questions,
+    })

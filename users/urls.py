@@ -15,10 +15,10 @@ urlpatterns = [
     path('departmentleader/', views.department_hub_view, name='departmentleader'),
     path('departments/', views.department_list, name='department-list'),
     path('departments/create/', views.department_create, name='department-create'),
-    
-
+    path('vote/', views.vote_view, name='vote'),
+    path('healthcheck/', views.vote_view, name='healthcheck'),
     path('', RedirectView.as_view(url='home/')),  
-    
+    path('engineer/', views.engineer_hub_view, name='engineer'),
 
     path('home/', views.home_view, name='home'),  
 ]

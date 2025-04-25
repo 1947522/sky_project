@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
@@ -60,3 +61,35 @@ class Team(models.Model):
 
     def __str__(self):
         return self.teamName
+    
+class HealthCard(models.Model):
+    card_name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='healthcards')  # One team can have many cards
+    created_by = models.ForeignKey('Employee', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_cards')
+
+    def __str__(self):
+        return self.card_name
+
+class Vote(models.Model):
+    TRAFFIC_LIGHT_CHOICES = [
+        ('Red', '🔴 Red'),
+        ('Yellow', '🟡 Yellow'),
+        ('Green', '🟢 Green'),
+    ]
+
+    PROGRESS_CHOICES = [
+        ('Stable', 'Stable'),
+        ('Improving', 'Improving'),
+        ('Getting worse', 'Getting worse'),
+    ]
+
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='votes')
+    healthcard = models.ForeignKey('HealthCard', on_delete=models.CASCADE, related_name='votes')
+    traffic_light = models.CharField(max_length=6, choices=TRAFFIC_LIGHT_CHOICES)
+    progress = models.CharField(max_length=20, choices=PROGRESS_CHOICES)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.employee.name} - {self.healthcard.card_name} - {self.traffic_light} ({self.progress})"
