@@ -1,224 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sky Employee Hub - Voting</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            border: 1px solid #0078d4;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        
-        /* Header styles */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #e1e1e1;
-        }
-        
-        .logo {
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-        }
-        
-        .logout-icon {
-            font-size: 20px;
-        }
-        
-        /* Hero section */
-        .hero {
-            position: relative;
-            height: 250px;
-            background: linear-gradient(rgba(0, 50, 100, 0.5), rgba(0, 50, 100, 0.5)), url('/api/placeholder/800/250') center/cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .hero h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .hero p {
-            font-size: 24px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        
-        /* Content */
-        .content {
-            padding: 20px;
-            background-color: white;
-        }
-        
-        .terms-header {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .terms-text {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        /* Checkbox */
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-        
-        .checkbox-container input {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        
-        .checkbox-label {
-            font-size: 14px;
-        }
-        
-        .required-notice {
-            color: red;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        
-        /* Button */
-        .button-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        
-        .begin-button {
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        
-        .begin-button:hover {
-            background-color: #555;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 10px 20px;
-            background-color: #f8f8f8;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #e1e1e1;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .nav-links {
-                gap: 10px;
-                font-size: 14px;
-            }
-            
-            .hero h1 {
-                font-size: 28px;
-            }
-            
-            .hero p {
-                font-size: 18px;
-            }
-        }
-    </style>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Employee Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .hero-section {
+      background-image: url("{% static 'images/SkyHero.png' %}");
+      background-size: cover;
+      background-position: center;
+      padding: 80px 0;
+      text-align: center;
+    }
+    .hero-section h1, .hero-section h2 {
+      color: black;
+    }
+    .terms-container {
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .footer {
+      padding: 15px 0;
+      background-color: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+    }
+    .sky-logo {
+      height: 40px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="logo">Logo</div>
-            <div class="nav-links">
-                <a href="#">HealthCheck Voting</a>
-                <a href="#">Team Performance</a>
-                <a href="#">Profile</a>
-            </div>
-            <div class="logout-icon">→</div>
-        </header>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/logo.png' %}" alt="Sky Logo" class="sky-logo">
+        </a>
         
-        <!-- Hero section with flying person -->
-        <div class="hero">
-            <h1>Sky Employee Hub</h1>
-            <p>Voting</p>
-        </div>
-        
-        <!-- Content -->
-        <div class="content">
-            <div class="terms-header">Terms and Conditions</div>
-            
-            <p class="terms-text">
-                Lorem ipsum dolor amet, consectetuer adipiscing elit. Euismod aliquet lacus maecenas fames feugiat sit. Risus ultricies faucibus integer phasellus vivamus nibh viverra ornare. Neque leo per dignissim sodales velit nostra sem. Per metus mattis lobortis morbi convallis malesuada nisi eleifend nunc. Maecenas imperdiet mauris maximus congue nullam.
-            </p>
-            
-            <p class="terms-text">
-                Fringilla libero fusce faucibus integer phasellus platea. Nascetur fermentum fermentum fermentum quas est purus duis. Imperdiet sociosqu sodales semper hac facilisis vel enim eleifend. Sollicitudin ante eget sociosqu sociosqu felis fringilla ut duis fames. Ipsum dictum tortor luctus magnis curae pulvinar. Rutrum euismod sollicitudin rutrum quis facilisis ac. Taciti habitasse class fusce est facilisis dictum
-            </p>
-            
-            <p class="terms-text">
-                Sem finibus finibus rutrum sagittis aenean fringilla cubilia sollicitudin. Fringilla ex porttitor odio sapien lobortis laculis amet bibendum eros. Pellentesque dictumst volutpat facilisi non justo magna a et. Cursus curae interdum rhoncus turpis ex. Nullam senectus turpis eu ridiculus poin sollicitudin torquent amet. In dignissim morbi ex elementum congue quis. Sapien aenean aliquam sociosqu velit aenean non bibendum lectus. Facilisi integer primis porttitor habitasse tristique tempus nunc sem.
-            </p>
-            
-            <div class="checkbox-container">
-                <input type="checkbox" id="accept">
-                <label for="accept" class="checkbox-label">Accept</label>
-            </div>
-            
-            <div class="required-notice">*must accept terms and conditions</div>
-        
-            <div class="button-container">
-                <a href="questions.html"> 
-                    <button class="begin-button" >Begin Voting</button>
-                </a>  
-            </div> 
-            
-        </div>
-        
-        <!-- Footer -->
-        <footer>
-            Footer
-        </footer>
+    <div class="ms-auto">
+    
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#">HeathCheck Voting</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Team Performance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+              <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+            </svg></a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="container">
+      <h1 class="display-3">SKY EMPLOYEE HUB</h1>
+      <h2 class="lead">VOTING</h2>
+    </div>
+  </div>
+
+  <!-- Terms and Conditions -->
+  <div class="container my-4">
+    <div class="terms-container">
+      <h4>Terms and Conditions</h4>
+      
+      <div class="mb-4">
+        <h5>Participation Requirements</h5>
+        <p>All full-time employees must participate<br>
+        Voting is anonymous but logged for verification<br>
+        Each employee gets exactly one vote per question</p>
+      </div>
+      
+      <div class="mb-4">
+        <h5>Data Usage Policy</h5>
+        <p>Results will be aggregated and analyzed<br>
+        Individual votes won't be shared publicly<br>
+        Comments may be quoted anonymously in reports</p>
+      </div>
+      
+      <div class="mb-4">
+        <h5>Voting Rules</h5>
+        <p>No campaigning or influencing other voters<br>
+        Technical issues must be reported immediately<br>
+        The decision of the voting committee is final</p>
+      </div>
+      
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="acceptTerms">
+        <label class="form-check-label" for="acceptTerms">Accept</label>
+      </div>
+      <div class="text-danger mb-3">*must accept terms and conditions</div>
+      
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-secondary" disabled id="beginVotingBtn">Begin Voting</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer text-center">
+    Footer
+  </div>
+
+  <script>
+    
+    document.getElementById('acceptTerms').addEventListener('change', function() {
+      document.getElementById('beginVotingBtn').disabled = !this.checked;
+    });
+  </script>
 </body>
 </html>
