@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .forms import EmployeeSignupForm, AdminUserCreationForm,DepartmentForm
-from .models import Employee,Team, Department,Vote,HealthCard
+from .models import Employee,Team, Department,Vote,HealthCard, Question
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -249,24 +250,108 @@ def engineer_hub_view(request):
     return render(request, 'engineer.html')
 
 
-def health_check(request):
-    questions = [
-        "How do you feel about your current workload?",
-        "How do you feel about the team's collaboration?",  
-        "How do you feel about the team's communication?",
-        "How do you feel about the team's morale?",
-        "How do you feel about the team's productivity?",
-    ]
-    # Get the current question number from the URL, default to 1 if not provided
-    question_number = int(request.GET.get('q', 1))  # Default to question 1 if 'q' is not in the URL
-    # Ensure the question number is within the valid range
-    if question_number < 1 or question_number > len(question):
-        question_number = 1  # Reset to the first question if out of range
-    # Get the specific question based on the question number
+def healthcard_list(request):
+    # Fetch all HealthCard objects from the database
+    healthcards = HealthCard.objects.all()  # This will get all health cards
+
+    # Pass the healthcards to the template
+    return render(request, 'healthcards/healthcard_list.html', {
+        'healthcards': healthcards
+    })
+# @login_required
+# def vote_on_healthcard(request, healthcard_id):
+#     # Fetch the health card by its ID
+#     healthcard = get_object_or_404(HealthCard, id=healthcard_id)
+    
+#     # Fetch all the questions related to this health card
+#     questions = Question.objects.filter(healthcard=healthcard)
+    
+#     # Ensure the user has permission to vote (e.g., Engineer or Team Leader)
+#     if request.user.role not in ['engineer', 'teamleader']:
+#         return redirect('unauthorized')  # Redirect to an unauthorized page if they can't vote
+
+#     # If the request is POST (the user is submitting their vote)
+#     if request.method == 'POST':
+#         # Handle form submission
+#         for question in questions:
+#             selected_answer = request.POST.get(f'card{healthcard_id}-q{question.id}')
+#             if selected_answer:
+#                 # Avoid duplicate votes from the same user
+#                 if not Vote.objects.filter(question=question, user=request.user).exists():
+#                     Vote.objects.create(question=question, value=selected_answer, user=request.user)
+
+#         return render(request, 'thank_you.html')
+
+#     # If it's a GET request, display the voting form
+#     return render(request, 'vote/voting.html', {'healthcard': healthcard, 'questions': questions})
+
+@login_required
+def healthcheck_page(request):
+    # Get the current question number from the query parameter
+    question_number = int(request.GET.get('q', 1))  # Default to question 1
+    healthcard = HealthCard.objects.first()  # This could be dynamically set if needed
+
+    # Get all questions for this healthcard
+    questions = healthcard.questions.all()
+    total_questions = questions.count()
+
+    # Ensure the question number is within bounds
+    if question_number < 1:
+        question_number = 1
+    elif question_number > total_questions:
+        question_number = total_questions
+
+    # Get the current question based on question_number
     question = questions[question_number - 1]
-    total_questions = len(questions)  # Total number of questions
-    return render(request, 'voting.html', {
+    
+    # Fetch any existing vote for the user on this question
+    existing_vote = Vote.objects.filter(employee=request.user, healthcard=healthcard, question=question).first()
+
+    # If it's the last question and the request method is POST
+    if question_number == total_questions and request.method == 'POST':
+        # Get the user's input
+        traffic_light = request.POST.get('traffic_light')
+        comment = request.POST.get('comment')
+
+        # Save or update the vote
+        if existing_vote:
+            existing_vote.traffic_light = traffic_light
+            existing_vote.comment = comment
+            existing_vote.save()
+        else:
+            Vote.objects.create(
+                employee=request.user,
+                healthcard=healthcard,
+                question=question,
+                traffic_light=traffic_light,
+                comment=comment
+            )
+
+        # Redirect to a thank you page after the last question
+        return redirect('thank_you_page')
+
+    # If it's not the last question, simply allow navigation to the next question
+    if question_number < total_questions and request.method == 'POST':
+        # Redirect to the next question after submitting the vote
+        return redirect(f"?q={question_number + 1}")
+
+    return render(request, 'healthcheck_page.html', {
+        'healthcard': healthcard,
         'question': question,
         'question_number': question_number,
         'total_questions': total_questions,
+        'existing_vote': existing_vote,
+        'is_last_question': question_number == total_questions  # This helps in the template
     })
+
+def healthcard_vote(request, card_id):
+    healthcard = get_object_or_404(HealthCard, id=card_id)
+    return render(request, 'vote/voting.html', {'healthcard': healthcard})
+
+def healthcard_terms(request, card_id):
+    healthcard = get_object_or_404(HealthCard, id=card_id)
+    context = {
+        'healthcard': healthcard,
+        'user_has_accepted_terms': False  # Always false initially
+    }
+    return render(request, 'vote/terms_and_condi.html', context)

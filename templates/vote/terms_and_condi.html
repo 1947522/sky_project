@@ -119,6 +119,12 @@
     
     document.getElementById('acceptTerms').addEventListener('change', function() {
       document.getElementById('beginVotingBtn').disabled = !this.checked;
+    
+    });
+
+    document.getElementById('beginVotingBtn').addEventListener('click', function() {
+        window.location.href = "/healthcheck/{{ healthcard.id }}/vote/";
+
     });
   </script>
 </body>

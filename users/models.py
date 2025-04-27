@@ -63,13 +63,29 @@ class Team(models.Model):
         return self.teamName
     
 class HealthCard(models.Model):
-    card_name = models.CharField(max_length=100, unique=True)
-    description = models.TextField()
-    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='healthcards')  # One team can have many cards
-    created_by = models.ForeignKey('Employee', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_cards')
+    # Card Information
+    card_name = models.CharField(max_length=100, unique=True)  # e.g., "Delivering Value"
+  # The question associated with this health card
+
+    
+    # Relationships
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='healthcards')  # One team can have many health cards
+    department = models.ForeignKey('Department', on_delete=models.CASCADE, related_name='healthcards')  # One department can have many health cards
 
     def __str__(self):
         return self.card_name
+    
+class Question(models.Model):
+    healthcard = models.ForeignKey('HealthCard', on_delete=models.CASCADE, related_name='questions')
+    text = models.TextField()  # The question itself
+
+    # Traffic light descriptions for each question
+    red_description = models.TextField()
+    yellow_description = models.TextField()
+    green_description = models.TextField()
+
+    def __str__(self):
+        return f"Question for {self.healthcard.card_name}"
 
 class Vote(models.Model):
     TRAFFIC_LIGHT_CHOICES = [

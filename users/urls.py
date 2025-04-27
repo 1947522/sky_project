@@ -16,10 +16,12 @@ urlpatterns = [
     path('departments/', views.department_list, name='department-list'),
     path('departments/create/', views.department_create, name='department-create'),
     path('vote/', views.vote_view, name='vote'),
-    path('healthcheck/', views.vote_view, name='healthcheck'),
+    # path('healthcheck/', views.vote_view, name='healthcheck'),
     path('', RedirectView.as_view(url='home/')),  
     path('engineer/', views.engineer_hub_view, name='engineer'),
-
+    path('healthcheck/', views.healthcard_list, name='healthcard-list'),
+    path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'),
+    path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'),
     path('home/', views.home_view, name='home'),  
 ]
 
