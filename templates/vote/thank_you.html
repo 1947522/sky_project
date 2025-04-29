@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Thank You{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title text-success mb-4">Thank You!</h2>
+            <p class="card-text">Your answers have been successfully submitted.</p>
+            <p class="card-text">Your input helps us improve our processes and work environment.</p>
+            <a href="{% url 'healthcard-list' %}" class="btn btn-primary mt-3">Return to Health Cards</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

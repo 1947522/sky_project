@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Department{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 50px;">
+    <div class="text-center mb-4">
+        <h2 class="mb-3">Create Department</h2>
+        <p class="text-muted">Fill in the details to create a new department</p>
+    </div>
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Department Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">Department Name*</label>
+                    <input type="text" class="form-control" id="name" name="name" required
+                           placeholder="e.g., Human Resources">
+                </div>
+                
+                <!-- Department Code -->
+                <div class="mb-3">
+                    <label for="code" class="form-label">Department Code*</label>
+                    <input type="text" class="form-control" id="code" name="code" required
+                           placeholder="e.g., HR-001">
+                </div>
+                
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description*</label>
+                    <textarea class="form-control" id="description" name="description" 
+                              rows="3" required placeholder="Department purpose"></textarea>
+                </div>
+                
+                <!-- Team Structure -->
+                <div class="mb-3">
+                    <label for="team_structure" class="form-label">Team Structure</label>
+                    <textarea class="form-control" id="team_structure" name="team_structure" 
+                              rows="2" placeholder="Team organization"></textarea>
+                </div>
+                
+                <!-- Location -->
+                <div class="mb-4">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location"
+                           placeholder="Building and floor">
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-block py-2">
+                        Create Department
+                    </button>
+                    <a href="{% url 'department-list' %}" class="btn btn-outline-secondary btn-block py-2">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3">
+        <small class="text-muted">All fields marked with * are required</small>
+    </div>
+</div>
+{% endblock %} 
+

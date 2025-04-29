@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- {% load static %} -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sky Employee Hub{% endblock %}</title>
+    <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
+</head>
+<body>
+    <header>
+        <div class="logo">Logo</div>
+        <div class="nav-links">
+            <a href="#">HealthCheck Status</a>
+            <a href="#">Team Performance</a>
+            <a href="#">Profile</a>
+            <a href="#">Boards</a>
+        </div>
+    </header>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        Footer
+    </footer>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Results - Sky Employee Hub{% endblock %}
+{% block hero_subtitle %}Survey Results{% endblock %}
+
+{% block content %}
+    <h2>Thank You for Completing the Survey</h2>
+    <div class="divider"></div>
+    
+    <div class="content-block">
+        <p>Your responses have been recorded. Thank you for your valuable feedback.</p>
+    </div>
+    
+    <div class="section-title">Your Responses</div>
+    
+    {% for response in responses %}
+    <div class="question">
+        <div class="question-title">{{ response.question.title }}</div>
+        <div class="content-block">
+            <p><strong>Your rating:</strong> {{ response.rating_display }}</p>
+            {% if response.comment %}
+                <p><strong>Your comment:</strong> {{ response.comment }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="divider"></div>
+    {% endfor %}
+    
+    <div class="navigation">
+        <a href="/" class="nav-btn">Return to Home</a>
+    </div>
+{% endblock %}

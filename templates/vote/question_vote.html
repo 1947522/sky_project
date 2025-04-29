@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% block title %}Vote on {{ healthcard.card_name }} Questions{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="card-title">{{ healthcard.card_name }}</h2>
+  <p class="intro-text">Please answer the following questions based on your assessment.</p>
+  <p class="question-count"><small>Total questions: {{ questions|length }}</small></p>
+  
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <form method="post" action="{% url 'healthcard_questions_vote' healthcard.id %}">
+    {% csrf_token %}
+    {% for question in questions %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Question {{ forloop.counter }} <span class="question-id">(ID: {{ question.id }})</span>:</strong> {{ question.text }}
+        </div>
+        <div class="card-body">
+          <div class="row mb-2 description-row">
+            <div class="col-md-4 description-column">
+              <div class="description-box red-box">
+                <strong class="option-label red-label">🔴 Red:</strong> 
+                <p class="description-text">{{ question.red_description }}</p>
+              </div>
+            </div>
+            <div class="col-md-4 description-column">
+              <div class="description-box yellow-box">
+                <strong class="option-label yellow-label">🟡 Yellow:</strong> 
+                <p class="description-text">{{ question.yellow_description }}</p>
+              </div>
+            </div>
+            <div class="col-md-4 description-column">
+              <div class="description-box green-box">
+                <strong class="option-label green-label">🟢 Green:</strong> 
+                <p class="description-text">{{ question.green_description }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group voting-group" role="group" aria-label="Traffic light selection">
+            <input type="radio" class="btn-check" name="answer_q_{{ question.id }}" id="answer_{{ question.id }}_red" value="red" autocomplete="off" required>
+            <label class="btn btn-outline-danger" for="answer_{{ question.id }}_red">Red</label>
+            
+            <input type="radio" class="btn-check" name="answer_q_{{ question.id }}" id="answer_{{ question.id }}_yellow" value="yellow" autocomplete="off" required>
+            <label class="btn btn-outline-warning" for="answer_{{ question.id }}_yellow">Yellow</label>
+            
+            <input type="radio" class="btn-check" name="answer_q_{{ question.id }}" id="answer_{{ question.id }}_green" value="green" autocomplete="off" required>
+            <label class="btn btn-outline-success" for="answer_{{ question.id }}_green">Green</label>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-warning">
+        <p>There are no questions associated with this health card yet.</p>
+      </div>
+    {% endfor %}
+    
+    <div class="action-buttons">
+      {% if questions %}
+        <button type="submit" class="btn btn-primary submit-btn">Submit Answers</button>
+        <a href="{% url 'healthcard-list' %}" class="btn btn-secondary cancel-btn">Cancel</a>
+      {% else %}
+        <a href="{% url 'healthcard-list' %}" class="btn btn-secondary back-btn">Back to Health Cards</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<style>
+  /* Modern, clean styling with Sky branding */
+  :root {
+    --sky-primary: #0072c9;
+    --sky-secondary: #00a0e9;
+    --sky-dark: #003366;
+    --sky-light: #f5f8fa;
+    --red-color: #dc3545;
+    --yellow-color: #ffc107;
+    --green-color: #28a745;
+    --card-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease;
+  }
+  
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  
+  /* Header styling */
+  .card-title {
+    color: var(--sky-dark);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+  }
+  
+  .intro-text {
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .question-count {
+    color: #777;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  /* Card styling */
+  .card {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-bottom: 1.5rem !important;
+    border-radius: 8px;
+    border: none;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  
+  .card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    background-color: var(--sky-light);
+    padding: 15px 20px;
+    border-bottom: 1px solid #eaeaea;
+    border-radius: 8px 8px 0 0 !important;
+    font-size: 1.05rem;
+    color: #333;
+  }
+  
+  .question-id {
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: normal;
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  /* Description boxes styling */
+  .description-row {
+    margin-bottom: 20px;
+  }
+  
+  .description-column {
+    padding: 8px;
+  }
+  
+  .description-box {
+    height: 100%;
+    padding: 15px;
+    border-radius: 6px;
+    transition: var(--transition);
+  }
+  
+  .description-box:hover {
+    transform: translateY(-2px);
+  }
+  
+  .red-box {
+    background-color: rgba(220, 53, 69, 0.05);
+    border-left: 4px solid var(--red-color);
+  }
+  
+  .yellow-box {
+    background-color: rgba(255, 193, 7, 0.05);
+    border-left: 4px solid var(--yellow-color);
+  }
+  
+  .green-box {
+    background-color: rgba(40, 167, 69, 0.05);
+    border-left: 4px solid var(--green-color);
+  }
+  
+  .option-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  
+  .red-label { color: var(--red-color); }
+  .yellow-label { color: #d39e00; }
+  .green-label { color: var(--green-color); }
+  
+  .description-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+  }
+  
+  /* Button group styling */
+  .voting-group {
+    display: flex !important;
+    margin-top: 1.25rem;
+    width: 100%;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  .btn-check + label {
+    flex: 1;
+    max-width: 150px;
+    padding: 10px 0;
+    text-align: center;
+    font-weight: 500;
+    border-width: 2px;
+    transition: var(--transition);
+  }
+  
+  .btn-outline-danger {
+    color: var(--red-color);
+    border-color: var(--red-color);
+  }
+  
+  .btn-outline-danger:hover, .btn-check:checked + .btn-outline-danger {
+    background-color: var(--red-color);
+    color: white;
+  }
+  
+  .btn-outline-warning {
+    color: #d39e00;
+    border-color: var(--yellow-color);
+  }
+  
+  .btn-outline-warning:hover, .btn-check:checked + .btn-outline-warning {
+    background-color: var(--yellow-color);
+    color: #212529;
+  }
+  
+  .btn-outline-success {
+    color: var(--green-color);
+    border-color: var(--green-color);
+  }
+  
+  .btn-outline-success:hover, .btn-check:checked + .btn-outline-success {
+    background-color: var(--green-color);
+    color: white;
+  }
+  
+  /* Alert styling */
+  .alert {
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Action buttons */
+  .action-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  
+  .btn-primary {
+    background-color: var(--sky-primary);
+    border-color: var(--sky-primary);
+  }
+  
+  .btn-primary:hover {
+    background-color: #005ca3;
+    border-color: #005ca3;
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+    transform: translateY(-2px);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .description-column {
+      margin-bottom: 10px;
+    }
+    
+    .voting-group {
+      flex-wrap: wrap;
+    }
+    
+    .btn-check + label {
+      flex: 1 0 30%;
+    }
+  }
+</style>
+{% endblock %}

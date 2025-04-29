@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sky Department Hub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="department-hub-container">
+        <header>
+            
+
+            <div class="nav-links">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'profile' %}">Profile</a>
+
+                    {% if request.user.employee.role == "engineer" %}
+                        <a href="{% url 'healthcheck' %}">Health Check</a>
+                        <a href="{% url 'my_team_summary' %}">My Team</a>
+
+                    {% elif request.user.employee.role == "teamleader" %}
+                        <a href="{% url 'team_summary' %}">Team Performance</a>
+                        <a href="{% url 'healthcheck' %}">Vote</a>
+
+                    {% elif request.user.employee.role == "departmentleader" %}
+                        <a href="{% url 'department_summary' %}">Department Summary</a>
+
+                    {% elif request.user.employee.role == "seniormanager" %}
+                        <a href="{% url 'org_summary' %}">All Departments</a>
+
+                    {% elif request.user.employee.role == "admin" %}
+                        <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                    {% endif %}
+
+                    
+                {% else %}
+                    <a href="{% url 'login' %}">Logout</a>
+                    
+                {% endif %}
+            </div>
+
+            <div class="share-icon">
+                <a href="#">&#8599;</a> <!-- Replace with actual functionality if needed -->
+            </div>
+        </header>
+
+        <div class="hero">
+            <div class="hero-image">
+                <img src="{% static 'images/SkyHero.png' %}" alt="Hero Image">
+            </div>
+        </div>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 Sky Department Hub. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
