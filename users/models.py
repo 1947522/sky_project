@@ -65,7 +65,7 @@ class Team(models.Model):
 class HealthCard(models.Model):
     # Card Information
     card_name = models.CharField(max_length=100, unique=True)  # e.g., "Delivering Value"
-  # The question associated with this health card
+
 
     
     # Relationships
@@ -85,7 +85,27 @@ class Question(models.Model):
     green_description = models.TextField()
 
     def __str__(self):
-        return f"Question for {self.healthcard.card_name}"
+
+        return f"Question for {self.healthcard.card_name}: {self.text[:50]}..."
+
+class Answer(models.Model):
+    TRAFFIC_LIGHT_CHOICES = [
+        ('Red', '🔴 Red'),
+        ('Yellow', '🟡 Yellow'),
+        ('Green', '🟢 Green'),
+    ]
+
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='answers')
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='answers')
+    traffic_light = models.CharField(max_length=6, choices=TRAFFIC_LIGHT_CHOICES)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        unique_together = ('employee', 'question')  # Each employee can answer each question only once
+        
+    def __str__(self):
+        return f"{self.employee.name} - {self.question.healthcard.card_name} - Q: {self.question.text[:30]}... - {self.traffic_light}"
+
 
 class Vote(models.Model):
     TRAFFIC_LIGHT_CHOICES = [
@@ -106,6 +126,10 @@ class Vote(models.Model):
     progress = models.CharField(max_length=20, choices=PROGRESS_CHOICES)
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+
+    
+    # Add a field to track if this vote was created from question answers
+    is_from_questions = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.employee.name} - {self.healthcard.card_name} - {self.traffic_light} ({self.progress})"

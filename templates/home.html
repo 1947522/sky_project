@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 {% extends 'base.html' %}
 
@@ -11,3 +12,36 @@
     </div>
 </div>
 {% endblock %}
+=======
+{% extends 'base.html' %}
+{% block content %}
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Profile</a> {# Placeholder #}
+        </li>
+        <li class="nav-item">
+          {# Updated link to point to the healthcard list view #}
+          <a class="nav-link" href="{% url 'healthcard-list' %}">Health Check</a> 
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Team Performance</a> {# Placeholder #}
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="homepage-container">
+<div class="welcome-box">
+<h1>Welcome {{name}}</h1>
+<h2>This is the {{role}} webpage</h2>
+<p>testing</p>
+</div>
+</div>
+{% endblock %}
+>>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
