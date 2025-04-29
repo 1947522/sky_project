@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
+
 from . import views
 
 from django.views.generic import RedirectView  
@@ -27,4 +28,5 @@ urlpatterns = [
     path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
     path('delete_users_admin/', views.delete_users_admin, name='delete_users_admin'),
 ]
+
 
