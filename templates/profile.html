@@ -1,0 +1,83 @@
+
+
+{% extends 'base.html' %}
+{% block content %}
+    {% include 'navbar.html' %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>User Profile</h1>
+    </div>
+
+    <div class="form-group">
+        <div class="form-field">
+            <label>User Name <span class="edit-icon">✎</span></label>
+            <div class="form-input-readonly">{{ user.username }}</div>
+        </div>
+        <div class="form-field">
+            <label>Full Name <span class="edit-icon">✎</span></label>
+            <div class="form-input-readonly">{{ user.name }}</div>
+        </div>
+
+        <div class="form-field">
+            <label>Email <span class="edit-icon">✎</span></label>
+            <div class="form-input-readonly">{{ user.email }}</div>
+        </div>
+        <div class="form-field">
+            <label>Password <span class="edit-icon">✎</span></label>
+            <div class="form-input-readonly">********</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="form-field">
+            <label>Job Role</label>
+            <div class="form-input-readonly">{{ user.get_role_display }}</div>
+        </div>
+    </div>
+    
+    <div class="form-field">
+        <button class="btn-reset" onclick="showConfirmation()">Reset Password</button>
+    </div>
+
+    <div class="profile-footer">
+        <div class="form-field">
+            <label>Team</label>
+            <div class="form-input-readonly">
+                {% if team %}{{ team.teamName }}{% else %}Not assigned{% endif %}
+            </div>
+        </div>
+        <div class="form-field">
+            <label>Department</label>
+            <div class="form-input-readonly">
+                {% if department %}{{ department.departmentName }}{% else %}Not assigned{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Password Reset</h3>
+            <p>Are you sure you want to reset your password?</p>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="hideConfirmation()">Cancel</button>
+                <button class="modal-btn confirm" onclick="proceedToReset()">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showConfirmation() {
+    document.getElementById('confirmationModal').style.display = 'flex';
+}
+
+function hideConfirmation() {
+    document.getElementById('confirmationModal').style.display = 'none';
+}
+
+function proceedToReset() {
+    window.location.href = "{% url 'reset_password_request' %}";
+}
+</script>
+{% endblock %}

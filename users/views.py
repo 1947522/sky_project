@@ -402,3 +402,90 @@ def delete_users_admin(request):
     # display all users
     users = Employee.objects.all()
     return render(request, 'delete_users_admin.html', {'users': users})
+
+def profile_view(request):
+    email = request.session.get('logged_in_email')
+    if not email:
+        return redirect('login')
+    try:
+        user = Employee.objects.get(email=email)
+        return render(request, 'profile.html', {'user': user})
+    except Employee.DoesNotExist:
+        messages.error(request, 'No employee found.')
+        return redirect('login')
+
+    team = None
+    department = None
+
+
+    # Fetch team if teamnumber is a valid integer
+    if user.teamnumber:
+        try:
+            team_number = int(user.teamnumber)
+            team = Team.objects.get(teamId=team_number)
+        except (ValueError, Team.DoesNotExist, TypeError):
+            team = None
+
+    # Fetch department if departmentnumber is a valid integer
+    if user.departmentnumber:
+        try:
+            dept_number = int(user.departmentnumber)
+            department = Department.objects.get(departmentId=dept_number)
+        except (ValueError, Department.DoesNotExist, TypeError):
+            department = None
+
+    return render(request, 'profile.html',{
+       'employee': employee,
+       'team': team,
+       'department': department,
+    })
+
+
+def reset_password_request(request):
+    # Check if user is logged in
+    if not request.session.get('logged_in_email'):
+        return redirect('login')
+
+    if request.method == 'POST':
+        entered_email = request.POST.get('email', '').strip().lower()
+        logged_email = request.session['logged_in_email'].lower()
+
+        # Verify entered email matches login email
+        if entered_email != logged_email:
+            messages.error(request, 'You must enter the email address you used to log in.')
+            return redirect('reset_password_request')
+
+        return redirect('reset_password_confirm')
+
+    return render(request, 'reset_password_request.html')
+
+def reset_password_confirm(request):
+    if not request.session.get('logged_in_email'):
+        return redirect('login')
+
+    logged_email = request.session['logged_in_email']
+    password_mismatch = request.session.pop('password_mismatch', False)
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            request.session['password_mismatch'] = True
+            return redirect('reset_password_confirm')
+
+        try:
+            employee = Employee.objects.get(email=logged_email)
+            employee.set_password(new_password)
+            employee.save()
+            messages.success(request, 'Password updated successfully!')
+            return redirect('home')
+
+        except Employee.DoesNotExist:
+            messages.error(request, 'Account not found.')
+            return redirect('login')
+
+    return render(request, 'reset_password_confirm.html', {
+        'password_mismatch': password_mismatch
+    })

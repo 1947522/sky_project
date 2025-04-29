@@ -27,6 +27,10 @@ urlpatterns = [
     path('home/', views.home_view, name='home'),
     path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
     path('delete_users_admin/', views.delete_users_admin, name='delete_users_admin'),
+    path('', RedirectView.as_view(url='/login/', permanent=False)),
+    path('profile/', views.profile_view, name='profile'),
+    path('reset_password/', views.reset_password_request, name='reset_password_request'),
+    path('reset_password/confirm/', views.reset_password_confirm, name='reset_password_confirm'),
 ]
 
 

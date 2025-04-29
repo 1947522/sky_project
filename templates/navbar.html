@@ -12,7 +12,7 @@
         {% endif %}
 
         <a href="#">Team Performance</a>
-        <a href="#">Profile</a>
+        <a href="{% url 'profile' %}">profile</a>
         <a href="{% url 'logout' %}" class="logout-icon" title="Logout">
             <img src="{% static 'images/logout.png' %}" alt="Logout" class="logout-icon">
         </a>
