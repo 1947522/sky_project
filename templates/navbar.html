@@ -1,0 +1,20 @@
+{% load static %}
+
+<header class="navbar">
+    <div class="logo-container">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="logo">
+        </a>
+    </div>
+    <nav class="nav-links">
+        {% if role == 'engineer' or role == 'teamleader' %}
+        <a href="{% url 'healthcard-list' %}">HealthCheck Voting</a>
+        {% endif %}
+
+        <a href="#">Team Performance</a>
+        <a href="#">Profile</a>
+        <a href="{% url 'logout' %}" class="logout-icon" title="Logout">
+            <img src="{% static 'images/logout.png' %}" alt="Logout" class="logout-icon">
+        </a>
+    </nav>
+</header>

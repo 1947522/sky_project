@@ -10,6 +10,7 @@ from users.views import department_list
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('admin_page/', views.admin_page, name='admin_page'),
 
     path('departmentleader/', views.department_hub_view, name='departmentleader'),

@@ -99,6 +99,48 @@ button:hover {
     font-size: 1.5rem;
     color: gray;
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 95%;
+}
+
+.logo {
+    height: 50px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #0078D7; /* Sky blue hover */
+}
+
+.logout-icon {
+    display: inline-block;
+    font-size: 18px;
+}
+
+.logout-icon img {
+    width: 30px;
+    height: 30px;
+}
+
 /* .container {
     max-width: 100%;
     margin: 0 auto;

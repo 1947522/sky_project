@@ -1,10 +1,10 @@
+from django.contrib.auth import logout
+from django.contrib.messages import get_messages
 from django.shortcuts import render, redirect,get_object_or_404
 from .forms import EmployeeSignupForm, AdminUserCreationForm,DepartmentForm
 from .models import Employee,Team, Department,Vote,HealthCard, Question
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-
 
 
 def signup(request):
@@ -48,6 +48,7 @@ def signup(request):
 
     return render(request, 'signup.html', {'form': form})
 
+
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('username')
@@ -68,22 +69,7 @@ def login_view(request):
                 request.session['logged_in_email'] = employee.email
                 request.session['role'] = employee.role
                 messages.success(request, 'Login successful.')
-
-                role = employee.role.lower()
-
-                if role == 'admin':
-                    return redirect('admin_page')
-                elif role == 'departmentleader':
-                    return redirect('departmentleader')
-                elif role == 'teamleader':
-                    return redirect('healthcheck')  # adjust if needed
-                elif role == 'seniormanager':
-                    return redirect('org_summary')   # adjust if needed
-                elif role == 'engineer':
-                    return redirect('engineer')   # adjust if needed
-                else:
-                    return redirect('home')
-
+                return redirect('home')
             else:
                 messages.error(request, 'Incorrect password.')
                 return redirect('login')
@@ -94,8 +80,11 @@ def login_view(request):
 
     return render(request, 'login.html')
 
-#def home_view(request):
-# return render(request, 'home.html')
+
+def logout_view(request):
+    request.session.flush() #logout of the user and clears the session
+    list(get_messages(request)) #clear any stored messages
+    return redirect('login')
 
 
 def admin_page(request):
@@ -105,8 +94,8 @@ def admin_page(request):
             employee = form.save(commit=False)
             employee.registered = False
             employee.save()
-            messages.success(request, 'User created successfully.')
-            return redirect('admin_page')
+            messages.success(request, 'User created successfully, you can now log in.')
+            return redirect('login')
     else:
         form = AdminUserCreationForm()
 
@@ -355,3 +344,5 @@ def healthcard_terms(request, card_id):
         'user_has_accepted_terms': False  # Always false initially
     }
     return render(request, 'vote/terms_and_condi.html', context)
+
+
