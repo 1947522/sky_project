@@ -1,0 +1,31 @@
+delete_users_admin
+----
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="delete-users-container">
+    <h2>Delete Users</h2>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3>Existing Users</h3>
+    <ul>
+        {% for user in users %}
+            <li>
+                {{ user.name }} - {{ user.email }}
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ user.email }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

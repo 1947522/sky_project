@@ -2,7 +2,7 @@ from django.contrib.auth import logout
 from django.contrib.messages import get_messages
 from django.shortcuts import render, redirect,get_object_or_404
 from .forms import EmployeeSignupForm, AdminUserCreationForm,DepartmentForm
-from .models import Employee,Team, Department,Vote,HealthCard, Question
+from .models import Employee, Team, Department, Vote, HealthCard, Question, VotingSession
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -346,3 +346,59 @@ def healthcard_terms(request, card_id):
     return render(request, 'vote/terms_and_condi.html', context)
 
 
+def healthcheck_voting_view(request):
+    # Ensure the user is logged in and get the logged-in email from the session
+    email = request.session.get('logged_in_email')
+
+    if not email:
+        return redirect('login')  # Redirect to login if no session email
+
+    try:
+        # Get the logged-in employee
+        employee = Employee.objects.get(email=email)
+
+        # Fetch the voting sessions
+        sessions = VotingSession.objects.all().order_by('-start_date')
+
+        selected_session = None
+        selected_session_id = request.GET.get('session_id')
+
+        if selected_session_id:
+            request.session['selected_session_id'] = selected_session_id
+            selected_session = VotingSession.objects.get(id=selected_session_id)
+
+            return redirect('healthcard-list')
+
+        return render(request, 'healthcheck_voting.html', {
+            'role': employee.role,
+            'sessions': sessions,
+            'selected_session': selected_session,
+        })
+
+    except Employee.DoesNotExist:
+        messages.error(request, 'Employee not found.')
+        return redirect('login')
+
+
+def delete_users_admin(request):
+    if request.method == 'POST':
+        # Get the email of the user to be deleted
+        email = request.POST.get('email')
+        #print(f"Received email: {email}")  # add in case of error for debugging purposes
+        if email:
+            try:
+                # find the employee and email
+                employee = Employee.objects.get(email=email)
+                employee.delete()  # Delete the employee
+                messages.success(request, 'User deleted successfully.')
+            except Employee.DoesNotExist:
+                messages.error(request, 'No user found with that email.')
+        else:
+            messages.error(request, 'No email provided.')
+
+        # Refresh the page after deletion
+        return redirect('delete_users_admin')
+
+    # display all users
+    users = Employee.objects.all()
+    return render(request, 'delete_users_admin.html', {'users': users})

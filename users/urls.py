@@ -5,7 +5,7 @@ from . import views
 
 from django.views.generic import RedirectView  
 from . import views
-from users.views import department_list
+from users.views import department_list, healthcheck_voting_view
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
@@ -23,6 +23,8 @@ urlpatterns = [
     path('healthcheck/', views.healthcard_list, name='healthcard-list'),
     path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'),
     path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'),
-    path('home/', views.home_view, name='home'),  
+    path('home/', views.home_view, name='home'),
+    path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
+    path('delete_users_admin/', views.delete_users_admin, name='delete_users_admin'),
 ]
 

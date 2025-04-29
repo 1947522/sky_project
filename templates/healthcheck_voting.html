@@ -1,0 +1,31 @@
+{% extends 'home.html' %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+
+    <div class="healthcheck-header">
+        <h1>Sky Employee Hub</h1>
+        <p>Health Check</p>
+    </div>
+
+    <div class="card-container">
+        <h2>{{ role }}</h2>
+        <p class="subheading">HealthCheck Voting</p>
+
+        <form method="get" class="session-form">
+            <label for="session" class="form-label">Select Session</label>
+            <select name="session_id" id="session" onchange="this.form.submit()">
+                <option value="" disabled {% if not selected_session %}selected{% endif %}>Session</option>
+                {% for session in sessions %}
+                    <option value="{{ session.id }}" {% if session.id == selected_session.id %}selected{% endif %}>
+                        {{ session.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        {% if selected_session %}
+            <h3>You selected: {{ selected_session.name }}</h3>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -109,3 +109,13 @@ class Vote(models.Model):
 
     def __str__(self):
         return f"{self.employee.name} - {self.healthcard.card_name} - {self.traffic_light} ({self.progress})"
+
+
+class VotingSession(models.Model):
+    name = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.start_date} - {self.end_date})"
