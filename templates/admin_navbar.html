@@ -1,0 +1,17 @@
+{% load static %}
+
+<header class="navbar">
+    <div class="logo-container">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/logo.png' %}" alt="Site Logo" class="logo">
+        </a>
+    </div>
+    <nav class="nav-links">
+        <a href="{% url 'delete_users_admin' %}">Delete user</a>
+        <a href="{% url 'create_session' %}">Create Session</a>
+        <a href="{% url 'delete_session' %}">Delete Session</a>
+        <a href="{% url 'logout' %}" class="logout-icon" title="Logout">
+            <img src="{% static 'images/logout.png' %}" alt="Logout" class="logout-icon">
+        </a>
+    </nav>
+</header>

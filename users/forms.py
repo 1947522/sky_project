@@ -1,5 +1,6 @@
 from django import forms
-from .models import Employee, Department,Vote
+from .models import Employee, Department, Vote, VotingSession
+
 
 class EmployeeSignupForm(forms.Form):
     name = forms.CharField(max_length=100)
@@ -34,4 +35,13 @@ class VoteForm(forms.ModelForm):
             'traffic_light': forms.RadioSelect,
             'progress': forms.Select,
             'comment': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Optional comment...'})
+        }
+
+class VotingSessionForm(forms.ModelForm):
+    class Meta:
+        model = VotingSession
+        fields = ['name', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.SelectDateWidget(),
+            'end_date': forms.SelectDateWidget(),
         }

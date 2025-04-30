@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="delete-users-container">
+    <h2>Delete a Voting Session</h2>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3>Existing Sessions</h3>
+    <ul>
+        {% for session in sessions %}
+            <li>
+                {{ session.name }} ({{ session.start_date }} - {{ session.end_date }})
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="name" value="{{ session.name }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

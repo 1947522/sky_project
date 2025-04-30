@@ -30,13 +30,14 @@ header {
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 600px; /* increased width */
-    min-height: 500px; /* added height */
+    width: 400px; /* Set default width */
+    min-height: 500px; /* Set minimum height */
     text-align: center;
     box-sizing: border-box;
-    margin-top: 60px;
+    margin: 40px auto;
     border: 1px solid #ddd;
 }
+
 
 .signup-container {
     background-color: white;
@@ -47,7 +48,7 @@ header {
     text-align: center;
     box-sizing: border-box;
     margin-top: 60px;
-    border: px solid #ddd;
+    border: 1px solid #ddd;
 }
 
 h2 {
@@ -109,10 +110,6 @@ button:hover {
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     width: 95%;
-}
-
-.logo {
-    height: 50px;
 }
 
 .nav-links {
@@ -341,17 +338,6 @@ button:hover {
 }
 
 /* Reset Password Pages */
-.login-container {
-    background-color: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    margin: 40px auto;
-    border: 1px solid #ddd;
-}
-
-
 .login-container h2 {
     font-size: 24px;
     margin-bottom: 30px;
@@ -433,4 +419,3 @@ button:hover {
         grid-template-columns: 1fr;
     }
 }
-

@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'admin_navbar.html' %}
 <div class="admin-container">
-    <h2>Create New User</h2>
-
+    <h2>Create a Voting Session</h2>
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -15,8 +13,8 @@
 
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Create User</button>
+        {{ form.as_p }}  <!-- Render the form fields -->
+        <button type="submit">Create Session</button>
     </form>
 </div>
-{% endblock %} 
+{% endblock %}

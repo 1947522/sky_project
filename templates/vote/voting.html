@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-{% block content %}
-<body>
-    <div class="container">
-        <h1>{{ healthcard.card_name }}</h1>
-       
-=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,46 +157,10 @@
 
    
     <div class="container my-4">
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
         <form method="POST">
             {% csrf_token %}
             
             
-<<<<<<< HEAD
-                <div class="card">
-                    {% for question in healthcard.questions.all %}
-                    <h3>{{ question.text }}</h3>
-                    
-                    <div class="question">
-                        <label>{{ question.red_description }}</label>
-                        <input type="radio" name="card{{ healthcard.id }}-q{{ question.id }}" value="red"> 🔴 Red
-                    </div>
-
-                    <div class="question">
-                        <label>{{ question.yellow_description }}</label>
-                        <input type="radio" name="card{{ healthcard.id }}-q{{ question.id }}" value="yellow"> 🟡 Yellow
-                    </div>
-
-                    <div class="question">
-                        <label>{{ question.green_description }}</label>
-                        <input type="radio" name="card{{ healthcard.id }}-q{{ question.id }}" value="green"> 🟢 Green
-                    </div>
-                    
-                        {% if question.comment %}
-                        <div class="question">
-                            <label>{{ question.comment }}</label>
-                            <input type="text" name="comment{{ healthcard.id }}-q{{ question.id }}" placeholder="Add a comment">
-                        {% endif %}
-                    {% endfor %}
-                </div>
-           
-            
-            <button type="submit" class="vote-button">Submit Vote</button>
-        </form>
-    </div>
-</body>
-{% endblock %}
-=======
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
@@ -296,4 +253,3 @@
     </script>
 </body>
 </html>
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91

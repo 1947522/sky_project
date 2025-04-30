@@ -4,11 +4,7 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-  <title>Sky Employee Hub</title>
-=======
   <title>Sky Employee Hub - Terms</title>
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .hero-section {
@@ -44,16 +40,12 @@
         <a class="navbar-brand" href="#">
             <img src="{% static 'images/logo.png' %}" alt="Sky Logo" class="sky-logo">
         </a>
-        
+
     <div class="ms-auto">
-    
+
         <ul class="navbar-nav">
           <li class="nav-item">
-<<<<<<< HEAD
-            <a class="nav-link" href="#">HeathCheck Voting</a>
-=======
             <a class="nav-link" href="{% url 'healthcard-list' %}">HealthCheck Voting</a>
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Team Performance</a>
@@ -62,10 +54,7 @@
             <a class="nav-link" href="#">Profile</a>
           </li>
           <li class="nav-item">
-<<<<<<< HEAD
-=======
             {# Add logout link here if needed #}
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
             <a class="nav-link" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
               <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
@@ -80,11 +69,7 @@
   <div class="hero-section">
     <div class="container">
       <h1 class="display-3">SKY EMPLOYEE HUB</h1>
-<<<<<<< HEAD
-      <h2 class="lead">VOTING</h2>
-=======
       <h2 class="lead">VOTING - {{ healthcard.card_name }}</h2>
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
     </div>
   </div>
 
@@ -92,41 +77,37 @@
   <div class="container my-4">
     <div class="terms-container">
       <h4>Terms and Conditions</h4>
-      
+
       <div class="mb-4">
         <h5>Participation Requirements</h5>
         <p>All full-time employees must participate<br>
         Voting is anonymous but logged for verification<br>
         Each employee gets exactly one vote per question</p>
       </div>
-      
+
       <div class="mb-4">
         <h5>Data Usage Policy</h5>
         <p>Results will be aggregated and analyzed<br>
         Individual votes won't be shared publicly<br>
         Comments may be quoted anonymously in reports</p>
       </div>
-      
+
       <div class="mb-4">
         <h5>Voting Rules</h5>
         <p>No campaigning or influencing other voters<br>
         Technical issues must be reported immediately<br>
         The decision of the voting committee is final</p>
       </div>
-      
+
       <div class="form-check mb-3">
         <input class="form-check-input" type="checkbox" id="acceptTerms">
         <label class="form-check-label" for="acceptTerms">Accept</label>
       </div>
       <div class="text-danger mb-3">*must accept terms and conditions</div>
-      
+
       <div class="d-flex justify-content-end">
-<<<<<<< HEAD
-        <button class="btn btn-secondary" disabled id="beginVotingBtn">Begin Voting</button>
-=======
         <button class="btn btn-secondary me-2" onclick="window.location.href='{% url 'healthcard-list' %}'">Cancel</button>
         <button class="btn btn-primary" disabled id="beginVotingBtn">Begin Voting</button>
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
       </div>
     </div>
   </div>
@@ -137,25 +118,18 @@
   </div>
 
   <script>
-    
+
     document.getElementById('acceptTerms').addEventListener('change', function() {
       document.getElementById('beginVotingBtn').disabled = !this.checked;
-    
+
     });
 
     document.getElementById('beginVotingBtn').addEventListener('click', function() {
-<<<<<<< HEAD
-        window.location.href = "/healthcheck/{{ healthcard.id }}/vote/";
-=======
         // Corrected URL to point to the questions page using Django's url tag
         window.location.href = "{% url 'healthcard_questions_vote' healthcard.id %}";
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91
 
     });
   </script>
 </body>
 </html>
-<<<<<<< HEAD
-=======
 
->>>>>>> 258c6958b635ef4433de90537cf2e114713c8e91

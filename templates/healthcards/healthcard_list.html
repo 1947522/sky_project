@@ -13,6 +13,7 @@
             padding: 0;
             background-color: #f4f4f9;
         }
+
         .hero-section {
             background-image: url("{% static 'images/SkyHero.png' %}");
             background-size: cover;
@@ -21,6 +22,7 @@
             text-align: center;
             position: relative;
         }
+
         .hero-section::before {
             content: '';
             position: absolute;
@@ -31,13 +33,16 @@
             background: rgba(0, 0, 50, 0.5);
             z-index: 1;
         }
+
         .hero-content {
             position: relative;
             z-index: 2;
         }
+
         .hero-section h1, .hero-section h2 {
             color: white;
         }
+
         .card-container {
             display: flex;
             flex-wrap: wrap;
@@ -46,6 +51,7 @@
             justify-content: center;
             margin-top: 20px;
         }
+
         .health-card {
             background-color: #fff;
             border: 1px solid #ddd;
@@ -57,22 +63,27 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
+
         .health-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
+
         .health-card h3 {
             margin: 0;
             font-size: 18px;
             color: #333;
         }
+
         .health-card p {
             font-size: 14px;
             color: #666;
         }
+
         .sky-logo {
             height: 40px;
         }
+
         .footer {
             padding: 15px 0;
             background-color: #f8f9fa;
@@ -84,6 +95,7 @@
     </style>
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
@@ -102,13 +114,17 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <!-- logout icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            </svg>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="hero-section">
         <div class="container hero-content">
@@ -128,6 +144,7 @@
         </div>
     </div>
     {% endblock %}
+
 
     <div class="footer">
         Footer
