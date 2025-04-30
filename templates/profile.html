@@ -1,5 +1,3 @@
-
-
 {% extends 'base.html' %}
 {% block content %}
     {% include 'navbar.html' %}
@@ -11,7 +9,7 @@
     <div class="form-group">
         <div class="form-field">
             <label>User Name <span class="edit-icon">✎</span></label>
-            <div class="form-input-readonly">{{ user.username }}</div>
+            <div class="form-input-readonly">{{ user.name }}</div>
         </div>
         <div class="form-field">
             <label>Full Name <span class="edit-icon">✎</span></label>
@@ -34,22 +32,22 @@
             <div class="form-input-readonly">{{ user.get_role_display }}</div>
         </div>
     </div>
-    
+
     <div class="form-field">
         <button class="btn-reset" onclick="showConfirmation()">Reset Password</button>
     </div>
 
     <div class="profile-footer">
         <div class="form-field">
-            <label>Team</label>
+            <label>Team Number</label>
             <div class="form-input-readonly">
-                {% if team %}{{ team.teamName }}{% else %}Not assigned{% endif %}
+                {% if teamnumber %}{{ teamnumber }}{% else %}Not assigned{% endif %}
             </div>
         </div>
         <div class="form-field">
-            <label>Department</label>
+            <label>Department Number</label>
             <div class="form-input-readonly">
-                {% if department %}{{ department.departmentName }}{% else %}Not assigned{% endif %}
+                {% if departmentnumber %}{{ departmentnumber }}{% else %}Not assigned{% endif %}
             </div>
         </div>
     </div>

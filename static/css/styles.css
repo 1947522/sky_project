@@ -419,3 +419,89 @@ button:hover {
         grid-template-columns: 1fr;
     }
 }
+
+.recovery-container {
+    background-color: #fff;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.recovery-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.recovery-subheader {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.recovery-messages {
+    margin-bottom: 25px;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.recovery-form-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.recovery-form-field {
+    margin-bottom: 15px;
+}
+
+.recovery-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+}
+
+.btn-recovery {
+    background-color: #dc3545;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-recovery:hover {
+    background-color: #c82333;
+}
+
+.recovery-footer {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.recovery-link {
+    color: #4A90E2;
+    text-decoration: none;
+}
+
+.recovery-link:hover {
+    text-decoration: underline;
+}

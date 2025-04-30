@@ -21,7 +21,6 @@ urlpatterns = [
     path('', RedirectView.as_view(url='home/')),
     path('healthcheck/', views.healthcard_list, name='healthcard-list'),
     path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'),
-    #path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'),
     path('home/', views.home_view, name='home'),
     path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
     path("healthcheck/<int:healthcard_id>/questions/", views.healthcard_questions_vote, name="healthcard_questions_vote"),
@@ -33,6 +32,8 @@ urlpatterns = [
     path('reset_password/confirm/', views.reset_password_confirm, name='reset_password_confirm'),
     path('create_session/', views.create_session, name='create_session'),
     path('delete_session/', views.delete_session, name='delete_session'),
+    path('recovery/', views.password_recovery_request, name='password_recovery_request'),
+    path('recovery/confirm/', views.password_recovery_confirm, name='password_recovery_confirm'),
 ]
 
 

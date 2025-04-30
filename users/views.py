@@ -540,37 +540,22 @@ def profile_view(request):
     email = request.session.get('logged_in_email')
     if not email:
         return redirect('login')
+
     try:
         user = Employee.objects.get(email=email)
-        return render(request, 'profile.html', {'user': user})
     except Employee.DoesNotExist:
         messages.error(request, 'No employee found.')
         return redirect('login')
 
-    team = None
-    department = None
+    # Get the team and department numbers directly from the user
+    teamnumber = user.teamnumber
+    departmentnumber = user.departmentnumber
 
-
-    # Fetch team if teamnumber is a valid integer
-    if user.teamnumber:
-        try:
-            team_number = int(user.teamnumber)
-            team = Team.objects.get(teamId=team_number)
-        except (ValueError, Team.DoesNotExist, TypeError):
-            team = None
-
-    # Fetch department if departmentnumber is a valid integer
-    if user.departmentnumber:
-        try:
-            dept_number = int(user.departmentnumber)
-            department = Department.objects.get(departmentId=dept_number)
-        except (ValueError, Department.DoesNotExist, TypeError):
-            department = None
-
-    return render(request, 'profile.html',{
-       'employee': employee,
-       'team': team,
-       'department': department,
+    # You can fetch additional details if needed, but currently, we are passing team/department numbers
+    return render(request, 'profile.html', {
+        'user': user,
+        'teamnumber': teamnumber,
+        'departmentnumber': departmentnumber,
     })
 
 
@@ -622,3 +607,47 @@ def reset_password_confirm(request):
     return render(request, 'reset_password_confirm.html', {
         'password_mismatch': password_mismatch
     })
+
+
+# views.py
+def password_recovery_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        try:
+            user = Employee.objects.get(email=email)
+            request.session['recovery_email'] = email
+            request.session.modified = True  # Force session save
+            return redirect('password_recovery_confirm')
+        except Employee.DoesNotExist:
+            messages.error(request, "No account found with that email address")
+            return redirect('password_recovery_request')
+    return render(request, 'password_recovery_request.html')
+
+
+def password_recovery_confirm(request):
+    recovery_email = request.session.get('recovery_email')
+
+    if not recovery_email:
+        messages.error(request, "Session expired, please start over")
+        return redirect('password_recovery_request')
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match")
+            return render(request, 'password_recovery_confirm.html')
+
+        try:
+            user = Employee.objects.get(email=recovery_email)
+            user.set_password(new_password)
+            user.save()
+            del request.session['recovery_email']
+            messages.success(request, "Password updated successfully! Please login")
+            return redirect('login')  # Redirect to login page
+        except Employee.DoesNotExist:
+            messages.error(request, "Account not found")
+            return redirect('password_recovery_request')
+
+    return render(request, 'password_recovery_confirm.html')
