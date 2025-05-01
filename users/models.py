@@ -153,12 +153,3 @@ class VotingSession(models.Model):
     def __str__(self):
         #controls how votingsession is to be displayed
         return f"{self.name} ({self.start_date} - {self.end_date})"
-
-
-class HealthCardTermsAcceptance(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    healthcard = models.ForeignKey(HealthCard, on_delete=models.CASCADE)
-    accepted = models.BooleanField(default=True)
-
-    class Meta:
-        unique_together = ('employee', 'healthcard')

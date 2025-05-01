@@ -4,7 +4,8 @@ from django.contrib.messages import get_messages
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import EmployeeSignupForm, AdminUserCreationForm, DepartmentForm, VotingSessionForm
-from .models import Employee, Team, Department, HealthCard, VotingSession, HealthCardTermsAcceptance
+from .models import Employee, Team, Department, HealthCard, VotingSession
+
 
 #vinicius and Shoaibs work
 def signup(request):
