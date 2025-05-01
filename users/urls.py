@@ -37,5 +37,5 @@ urlpatterns = [
     path('recovery/', views.password_recovery_request, name='password_recovery_request'),
     path('recovery/confirm/', views.password_recovery_confirm, name='password_recovery_confirm'),
 ]
-  
+
 

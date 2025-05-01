@@ -399,3 +399,73 @@ class DeleteSessionTests(TestCase):
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'No name provided.')
+
+class VotingTests(TestCase):
+    def setUp(self):
+        # Create a test employee and health card
+        self.employee = Employee.objects.create(
+            email="voter@sky.net",
+            name="Voter User",
+            role="engineer",
+            registered=True
+        )
+        self.employee.set_password("voterpass123")
+        self.employee.save()
+
+        self.healthcard = HealthCard.objects.create(
+            card_name="Voting Health Card",
+            department=Department.objects.create(departmentName="Voting Department"),
+            team=Team.objects.create(teamName="Voting Team")
+        )
+
+        # Log in the test employee
+        self.client.login(username=self.employee.email, password="voterpass123")
+
+    def test_voting_submission(self):
+        # Simulate submitting a vote
+        response = self.client.post(reverse('healthcard_vote', args=[self.healthcard.id]), {
+            'traffic_light_1': 'Green',
+            'progress_1': 'Stable',
+            'comment_1': 'Everything is fine.'
+        })
+
+        # Check if the vote was successfully submitted
+        self.assertEqual(response.status_code, 302)  # Redirect after submission
+        self.assertRedirects(response, reverse('healthcard-list'))
+        self.assertEqual(Vote.objects.count(), 1)
+
+class HealthCardListTests(TestCase):
+    def setUp(self):
+        # Create test health cards
+        self.healthcard1 = HealthCard.objects.create(card_name="Health Card 1")
+        self.healthcard2 = HealthCard.objects.create(card_name="Health Card 2")
+
+    def test_healthcard_list_view(self):
+        response = self.client.get(reverse('healthcard-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'healthcards/healthcard_list.html')
+        self.assertContains(response, "Health Card 1")
+        self.assertContains(response, "Health Card 2")
+
+class HealthCardTermsTests(TestCase):
+    def setUp(self):
+        # Create a test employee and health card
+        self.employee = Employee.objects.create(
+            email="test@sky.net",
+            name="Test User",
+            role="engineer",
+            registered=True
+        )
+        self.employee.set_password("testpass123")
+        self.employee.save()
+
+        self.healthcard = HealthCard.objects.create(card_name="Test Health Card")
+
+        # Log in the test employee
+        self.client.login(username=self.employee.email, password="testpass123")
+
+    def test_redirect_to_terms_page(self):
+        response = self.client.get(reverse('healthcard_terms', args=[self.healthcard.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'vote/terms_and_condi.html')
+        self.assertContains(response, self.healthcard.card_name)
