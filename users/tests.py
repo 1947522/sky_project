@@ -4,11 +4,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.contrib import messages
+
+from .forms import VotingSessionForm
 from .models import Employee, Department, Team, HealthCard, Question, Answer, Vote, VotingSession
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 
-
+#MEHDI WORK
 class ModelTests(TestCase):
     def test_employee_creation(self):
         employee = Employee.objects.create(
@@ -314,3 +316,86 @@ class PasswordRecoveryTests(TestCase):
         self.assertTemplateUsed(response, 'password_recovery_confirm.html')
 
 
+class CreateSessionTests(TestCase):
+    def test_get_request_renders_form(self):
+
+        response = self.client.get(reverse('create_session'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'create_session.html')
+        self.assertIsInstance(response.context['form'], VotingSessionForm)
+        self.assertContains(response, 'Create a Voting Session')
+
+    def test_valid_post_creates_session_and_redirects(self):
+        data = {
+            'name': 'Annual Voting',
+            'start_date': '2024-01-01',
+            'end_date': '2024-01-07'
+        }
+        response = self.client.post(reverse('create_session'), data, follow=True)
+
+        self.assertEqual(VotingSession.objects.count(), 1)
+        self.assertRedirects(response, reverse('create_session'))
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Voting session created successfully.')
+
+    def test_invalid_post_shows_error(self):
+        data = {
+            'name': '',
+            'start_date': '2024-01-01',
+            'end_date': '2024-01-07'
+        }
+        response = self.client.post(reverse('create_session'), data, follow=True)
+        self.assertEqual(VotingSession.objects.count(), 0)
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'There was an error in the form submission.')
+class DeleteSessionTests(TestCase):
+    def setUp(self):
+        self.session = VotingSession.objects.create(
+            name='Test Session',
+            start_date='2024-01-01',
+            end_date='2024-01-07'
+        )
+
+    def test_get_request_lists_sessions(self):
+        response = self.client.get(reverse('delete_session'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'delete_session.html')
+        self.assertContains(response, self.session.name)
+        self.assertIn(self.session, response.context['sessions'])
+
+    def test_post_deletes_session_and_shows_success(self):
+        response = self.client.post(
+            reverse('delete_session'),
+            {'name': self.session.name},
+            follow=True
+        )
+
+        self.assertEqual(VotingSession.objects.count(), 0)
+        self.assertRedirects(response, reverse('delete_session'))
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Voting session deleted successfully.')
+
+    def test_post_invalid_name_shows_error(self):
+        response = self.client.post(
+            reverse('delete_session'),
+            {'name': 'Non-existent Session'},
+            follow=True
+        )
+
+        self.assertEqual(VotingSession.objects.count(), 1)  # Session still exists
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'No voting session found with that name.')
+
+    def test_post_missing_name_shows_error(self):
+        response = self.client.post(reverse('delete_session'), follow=True)
+        self.assertEqual(VotingSession.objects.count(), 1)  # Session still exists
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'No name provided.')

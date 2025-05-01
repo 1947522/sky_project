@@ -1,19 +1,16 @@
-import logging
-
-from django.contrib.auth import logout
-from django.contrib.messages import get_messages
-from django.db import transaction
-from django.shortcuts import render, redirect,get_object_or_404
-from django.utils import timezone
-
-from .forms import EmployeeSignupForm, AdminUserCreationForm, DepartmentForm, VotingSessionForm
-from .models import Employee, Team, Department, Vote, HealthCard, Question, VotingSession, Answer
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages import get_messages
+from django.shortcuts import render, redirect, get_object_or_404
 
+from .forms import EmployeeSignupForm, AdminUserCreationForm, DepartmentForm, VotingSessionForm
+from .models import Employee, Team, Department, HealthCard, VotingSession, HealthCardTermsAcceptance
 
+#vinicius and Shoaibs work
 def signup(request):
+    #We are using a form, so we are using post
     if request.method == 'POST':
+        #Using form from the forms page
         form = EmployeeSignupForm(request.POST)
 
         if form.is_valid():
@@ -21,27 +18,33 @@ def signup(request):
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
 
-            # Email domain check
+            # Check if email ends with @sky.net. Uses built in checks
             if not email.endswith('@sky.net'):
+                #Displays error if the email  given by user doesnt end with @sky.net
                 form.add_error('email', 'Email must end with @sky.net.')
                 return render(request, 'signup.html', {'form': form})
 
             try:
+                #gets the email from models
                 employee = Employee.objects.get(email=email)
-
+                #checks boolean for registered
                 if employee.registered:
+                    #if registered is true, it sends a message saying log in
                     form.add_error(None, 'You have already registered. Please log in.')
                     return render(request, 'signup.html', {'form': form})
 
 
                 employee.name = name
+                #gets the passwords that is going to be hashed in forms
                 employee.set_password(password)
+                #sets the boolean for registered to true
                 employee.registered = True
+                #commits changes to the database
                 employee.save()
-
+                #sends a success message on screen
                 messages.success(request, 'Registration successful. You can now log in.')
                 return redirect('login')
-
+            #buit in check
             except Employee.DoesNotExist:
                 form.add_error(None, 'No employee account with this email. Contact your admin.')
                 return render(request, 'signup.html', {'form': form})
@@ -53,31 +56,33 @@ def signup(request):
 
     return render(request, 'signup.html', {'form': form})
 
-
+#vinicius and Shoaibs work
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('username')
         password = request.POST.get('password')
 
         try:
+            #gets through models
             employee = Employee.objects.get(email=email)
-
+            #checks to see if email ends with @sky.net
             if not employee.email.endswith('@sky.net'):
                 messages.error(request, 'Invalid email domain.')
                 return redirect('login')
-
+            #boolean for employee
             if not employee.registered:
                 messages.error(request, 'Employee is not registered yet.')
                 return redirect('login')
-
+            #checks emails
             if employee.check_password(password):
                 request.session['logged_in_email'] = employee.email
                 request.session['role'] = employee.role
                 messages.success(request, 'Login successful.')
-                return redirect('home')
-
-            if employee.role.lower() == 'admin':
-                return redirect('admin_page')
+                #checks the role of the employee and redirects to pages that match
+                if employee.role == 'admin':
+                    return redirect('admin_page')
+                else:
+                    return redirect('home')
 
             else:
                 messages.error(request, 'Incorrect password.')
@@ -89,27 +94,33 @@ def login_view(request):
 
     return render(request, 'login.html')
 
-
+#vinicius work
 def logout_view(request):
     request.session.flush() #logout of the user and clears the session
     list(get_messages(request)) #clear any stored messages
     return redirect('login')
 
-
+#Shoaibs work
 def admin_page(request):
     if request.method == 'POST':
+        #gets form from forms
         form = AdminUserCreationForm(request.POST)
         if form.is_valid():
+            #for creating a temporary version of the employee saved in the database. can modify the object still.
             employee = form.save(commit=False)
+            #the registered boolean is set to false
             employee.registered = False
+            #now the employee is saved
             employee.save()
             messages.success(request, 'User created successfully, you can now signup.')
             return redirect('signup')
     else:
+        #form from forms
         form = AdminUserCreationForm()
 
     return render(request, 'adminpage.html', {'form': form})
 
+#Shoaibs work
 def home_view(request):
     email = request.session.get('logged_in_email')
 
@@ -119,6 +130,7 @@ def home_view(request):
     employee = Employee.objects.get(email=email)
 
     return render(request, 'home.html', {
+        #these are used in home.html to create a dynamic webpage
             'name': employee.name,
             'role': employee.role,
         })
@@ -234,218 +246,160 @@ def vote_view(request):
         return redirect('login')
 
 
-
 def healthcard_list(request):
-    employee_id = request.session.get("employee_id")
-    try:
-        employee = Employee.objects.get(id=employee_id)
-        team_healthcards = HealthCard.objects.filter(team__teamId=employee.teamnumber)
-        return render(request, "healthcards/healthcard_list.html", {
-            "healthcards": team_healthcards,
-            "employee": employee
-        })
-    except Employee.DoesNotExist:
-         logger.error(f"Session error: Employee ID {employee_id} not found in healthcard_list.")
-         messages.error(request, "Employee not found.")
-         request.session.flush()
-         return redirect("login")
-    except Team.DoesNotExist:
-         logger.error(f"Data error: Team ID {employee.teamnumber} not found for employee {employee_id}.")
-         messages.error(request, "Team not found for this employee.")
-         return redirect("home")
-    except Exception as e:
-        logger.exception(f"Unexpected error in healthcard_list for employee {employee_id}: {e}")
-        messages.error(request, f"An error occurred: {e}")
-        return redirect("home")
+    # Fetch all HealthCard objects from the database
+    healthcards = HealthCard.objects.all()  # This will get all health cards
 
-@login_required
-def healthcheck_page(request):
-    # Get the current question number from the query parameter
-    question_number = int(request.GET.get('q', 1))  # Default to question 1
-    healthcard = HealthCard.objects.first()  # This could be dynamically set if needed
-
-    # Get all questions for this healthcard
-    questions = healthcard.questions.all()
-    total_questions = questions.count()
-
-    # Ensure the question number is within bounds
-    if question_number < 1:
-        question_number = 1
-    elif question_number > total_questions:
-        question_number = total_questions
-
-    # Get the current question based on question_number
-    question = questions[question_number - 1]
-    
-    # Fetch any existing vote for the user on this question
-    existing_vote = Vote.objects.filter(employee=request.user, healthcard=healthcard, question=question).first()
-
-    # If it's the last question and the request method is POST
-    if question_number == total_questions and request.method == 'POST':
-        # Get the user's input
-        traffic_light = request.POST.get('traffic_light')
-        comment = request.POST.get('comment')
-
-        # Save or update the vote
-        if existing_vote:
-            existing_vote.traffic_light = traffic_light
-            existing_vote.comment = comment
-            existing_vote.save()
-        else:
-            Vote.objects.create(
-                employee=request.user,
-                healthcard=healthcard,
-                question=question,
-                traffic_light=traffic_light,
-                comment=comment
-            )
-
-        # Redirect to a thank you page after the last question
-        return redirect('thank_you_page')
-
-    # If it's not the last question, simply allow navigation to the next question
-    if question_number < total_questions and request.method == 'POST':
-        # Redirect to the next question after submitting the vote
-        return redirect(f"?q={question_number + 1}")
-
-    return render(request, 'healthcheck_page.html', {
-        'healthcard': healthcard,
-        'question': question,
-        'question_number': question_number,
-        'total_questions': total_questions,
-        'existing_vote': existing_vote,
-        'is_last_question': question_number == total_questions  # This helps in the template
+    # Pass the healthcards to the template
+    return render(request, 'healthcards/healthcard_list.html', {
+        'healthcards': healthcards
     })
 
-
-def healthcard_vote(request, healthcard_id):
-    return redirect("healthcard_questions_vote", healthcard_id=healthcard_id)
-
-logger = logging.getLogger(__name__)
-
-
-
-def healthcard_terms(request, healthcard_id):
-    try:
-        healthcard = get_object_or_404(HealthCard, id=healthcard_id)
-        question_count = Question.objects.filter(healthcard=healthcard).count()
-
-        if question_count == 0:
-            messages.warning(request,
-                             f"There are no questions available for {healthcard.card_name}. Please contact an administrator.")
-            return redirect("healthcard-list")
-
-        context = {
-            "healthcard": healthcard,
-            "user_has_accepted_terms": False
-        }
-        return render(request, "vote/terms_and_condi.html", context)
-    except Exception as e:
-        logger.exception(f"Error in healthcard_terms view: {e}")
-        raise
+def healthcard_vote(request, card_id): #sheroz work
+    # Get the healthcard using the card_id
+    healthcard = get_object_or_404(HealthCard, id=card_id)
+    # Add your logic for voting
+    return render(request, 'vote/voting.html', {'healthcard': healthcard})
 
 
-def healthcard_questions_vote(request, healthcard_id): #anes work
-    employee_id = request.session.get("employee_id")
-    logger.info(f"Entering healthcard_questions_vote for employee {employee_id}, healthcard {healthcard_id}")
+def healthcard_terms(request, card_id):
+    # Get employee ID from session
+    employee_id = request.session.get('employee_id')  # Adjust to your auth system
+    if not employee_id:
+        # Handle case where employee_id is not found in session
+        return redirect('login')  # Or wherever you'd like to redirect if not logged in
 
+    # Fetch employee and health card objects
     employee = get_object_or_404(Employee, id=employee_id)
-    healthcard = get_object_or_404(HealthCard, id=healthcard_id)
-    questions = Question.objects.filter(healthcard=healthcard).order_by("id")
+    healthcard = get_object_or_404(HealthCard, id=card_id)
 
-    # Role check
-    if employee.role not in ["engineer", "teamleader"]:
-        messages.error(request, "You don't have permission to vote.")
-        return redirect("healthcard-list")
+    # Check if the employee has already accepted the terms for this health card
+    existing_acceptance = HealthCardTermsAcceptance.objects.filter(employee=employee, healthcard=healthcard).first()
 
-    # Team match check
-    if healthcard.team.teamId != employee.teamnumber:
-        messages.error(request, "You can only vote on healthcards for your team.")
-        return redirect("healthcard-list")
+    if existing_acceptance and existing_acceptance.accepted:
+        return redirect('healthcard_list')  # Redirect if terms are already accepted
 
-    # Already voted check
-    existing_answers = Answer.objects.filter(employee=employee, question__healthcard=healthcard)
-    if existing_answers.exists():
-        messages.info(request, f"You have already submitted answers for {healthcard.card_name}.")
-        return redirect("healthcard-list")
+    if request.method == 'POST':
+        # Save acceptance only if it doesn't already exist
+        if not existing_acceptance:
+            HealthCardTermsAcceptance.objects.create(
+                employee=employee,
+                healthcard=healthcard,
+                accepted=True
+            )
+        return redirect('healthcard_list')  # Redirect after POST
 
-    if request.method == "POST":
-        # Terms acceptance check
-        if not request.POST.get("accept_terms"):
-            messages.error(request, "You must accept the terms and conditions before proceeding.")
-            return render(request, "vote/question_vote.html", {
-                "healthcard": healthcard,
-                "questions": questions,
-                "employee": employee,
-                "submitted_data": request.POST
-            })
-
-        answers_data = {}
-        valid_submission = True
-
-        # Optional: prepare question map to avoid multiple DB hits
-        question_map = {q.id: q for q in questions}
-
-        for question in questions:
-            answer_key = f"answer_q_{question.id}"
-            answer_value = request.POST.get(answer_key)
-
-            if not answer_value or answer_value not in dict(Answer.TRAFFIC_LIGHT_CHOICES):
-                valid_submission = False
-                messages.error(
-                    request,
-                    f"Please select an answer for all questions. Missing or invalid answer for: '{question.text[:50]}...'"
-                )
-                break
-
-            answers_data[question.id] = answer_value
-
-        if valid_submission:
-            try:
-                with transaction.atomic():
-                    for question_id, traffic_light_value in answers_data.items():
-                        question = question_map.get(question_id)
-                        Answer.objects.create(
-                            employee=employee,
-                            question=question,
-                            traffic_light=traffic_light_value,
-                            created_at=timezone.now()
-                        )
-                messages.success(
-                    request,
-                    f"Your answers for '{healthcard.card_name}' have been submitted successfully!"
-                )
-                return redirect("healthcard-list")
-            except Exception as e:
-                logger.exception(f"Error saving answers for employee {employee.id} on healthcard {healthcard.id}: {e}")
-                messages.error(
-                    request,
-                    "An unexpected error occurred while saving your answers. Please try again later."
-                )
-                raise
-
-        # Form had errors; re-render with submitted data
-        return render(request, "vote/question_vote.html", {
-            "healthcard": healthcard,
-            "questions": questions,
-            "employee": employee,
-            "submitted_data": request.POST
-        })
-
-    # GET request: show form
-    return render(request, "vote/question_vote.html", {
-        "healthcard": healthcard,
-        "questions": questions,
-        "employee": employee
+    # Render the terms page
+    return render(request, 'vote/terms_and_condi.html', {
+        'healthcard': healthcard,
+        'existing_acceptance': existing_acceptance,  # Optional: To show acceptance status in the template
     })
 
-def thank_you_page(request):
+
+# def healthcard_questions_vote(request, healthcard_id):  # anes work
+#     employee_id = request.session.get("employee_id")
+#     logger.info(f"Entering healthcard_questions_vote for employee {employee_id}, healthcard {healthcard_id}")
+#
+#     employee = get_object_or_404(Employee, id=employee_id)
+#     healthcard = get_object_or_404(HealthCard, id=healthcard_id)
+#     questions = Question.objects.filter(healthcard=healthcard).order_by("id")
+#
+#     # Role check
+#     if employee.role not in ["engineer", "teamleader"]:
+#         messages.error(request, "You don't have permission to vote.")
+#         return redirect("healthcard-list")
+#
+#     # Team match check
+#     if healthcard.team.teamId != employee.teamnumber:
+#         messages.error(request, "You can only vote on healthcards for your team.")
+#         return redirect("healthcard-list")
+#
+#     # Already voted check
+#     existing_answers = Answer.objects.filter(employee=employee, question__healthcard=healthcard)
+#     if existing_answers.exists():
+#         messages.info(request, f"You have already submitted answers for {healthcard.card_name}.")
+#         return redirect("healthcard-list")
+#
+#     if request.method == "POST":
+#         # Terms acceptance check
+#         if not request.POST.get("accept_terms"):
+#             messages.error(request, "You must accept the terms and conditions before proceeding.")
+#             return render(request, "vote/question_vote.html", {
+#                 "healthcard": healthcard,
+#                 "questions": questions,
+#                 "employee": employee,
+#                 "submitted_data": request.POST
+#             })
+#
+#         answers_data = {}
+#         valid_submission = True
+#
+#         # Optional: prepare question map to avoid multiple DB hits
+#         question_map = {q.id: q for q in questions}
+#
+#         for question in questions:
+#             answer_key = f"answer_q_{question.id}"
+#             answer_value = request.POST.get(answer_key)
+#
+#             if not answer_value or answer_value not in dict(Answer.TRAFFIC_LIGHT_CHOICES):
+#                 valid_submission = False
+#                 messages.error(
+#                     request,
+#                     f"Please select an answer for all questions. Missing or invalid answer for: '{question.text[:50]}...'"
+#                 )
+#                 break
+#
+#             answers_data[question.id] = answer_value
+#
+#         if valid_submission:
+#             try:
+#                 with transaction.atomic():
+#                     for question_id, traffic_light_value in answers_data.items():
+#                         question = question_map.get(question_id)
+#                         Answer.objects.create(
+#                             employee=employee,
+#                             question=question,
+#                             traffic_light=traffic_light_value,
+#                             created_at=timezone.now()
+#                         )
+#                 messages.success(
+#                     request,
+#                     f"Your answers for '{healthcard.card_name}' have been submitted successfully!"
+#                 )
+#                 return redirect("healthcard-list")
+#             except Exception as e:
+#                 logger.exception(f"Error saving answers for employee {employee.id} on healthcard {healthcard.id}: {e}")
+#                 messages.error(
+#                     request,
+#                     "An unexpected error occurred while saving your answers. Please try again later."
+#                 )
+#                 raise
+#
+#         # Form had errors; re-render with submitted data
+#         return render(request, "vote/question_vote.html", {
+#             "healthcard": healthcard,
+#             "questions": questions,
+#             "employee": employee,
+#             "submitted_data": request.POST
+#         })
+#
+#     # GET request: show form
+#     return render(request, "vote/question_vote.html", {
+#         "healthcard": healthcard,
+#         "questions": questions,
+#         "employee": employee
+#     })
+
+
+def thank_you_page(request): #anes work
     return render(request, "vote/thank_you.html")
 
-
+#VINICIUS WORK
 def healthcheck_voting_view(request):
+    #Get the logged in users email from the session
     email = request.session.get('logged_in_email')
 
+    # If not logged in, redirect to the login page with an error message
     if not email:
         messages.error(request, 'Please log in to continue.')
         return redirect('login')
@@ -458,14 +412,17 @@ def healthcheck_voting_view(request):
         sessions = VotingSession.objects.all().order_by('-start_date')
 
         selected_session = None
+        # Check if a voting session ID was selected via GET parameter
         selected_session_id = request.GET.get('session_id')
 
         if selected_session_id:
+            # Store the selected session ID in the session for later use
             request.session['selected_session_id'] = selected_session_id
             selected_session = VotingSession.objects.get(id=selected_session_id)
 
             return redirect('healthcard-list')
 
+        # Render the voting session selection page if no session is selected
         return render(request, 'healthcheck_voting.html', {
             'role': employee.role,
             'sessions': sessions,
@@ -473,10 +430,12 @@ def healthcheck_voting_view(request):
         })
 
     except Employee.DoesNotExist:
+        # If the email doesn't match any Employee, show an error and redirect
         messages.error(request, 'Employee not found.')
         return redirect('login')
 
-
+#vinicius and Shoaibs work
+#same code as create new user or delete new user
 def create_session(request):
     #added due to error to get to form
     form = VotingSessionForm()
@@ -484,21 +443,26 @@ def create_session(request):
     if request.method == 'POST':
         form = VotingSessionForm(request.POST)
         if form.is_valid():
+            #saves form to create a session with
             form.save()
             messages.success(request, 'Voting session created successfully.')
-            return redirect('create_session')  # Redirect to the session creation page after success
+            return redirect('create_session')  # Redirects to same page if successfyul
         else:
             messages.error(request, 'There was an error in the form submission.')
 
     return render(request, 'create_session.html', {'form': form})
 
+#vinicius and Shoaibs work
+#same code as create new user or delete new user
 def delete_session(request):
     if request.method == 'POST':
         name = request.POST.get('name')
-        print(f"Session name received: {name}")
+        #added for debugging purposes
+        #print(f"Session name received: {name}")
         if name:
             try:
                 session = VotingSession.objects.get(name=name)
+                #deletes session from the database
                 session.delete()
                 messages.success(request, 'Voting session deleted successfully.')
             except VotingSession.DoesNotExist:
@@ -506,23 +470,26 @@ def delete_session(request):
         else:
             messages.error(request, 'No name provided.')
 
-        # Refresh the page after deletion
+        # Refresh the page after deletion to show the new list of sessions
         return redirect('delete_session')
 
     # display all sessions
     sessions = VotingSession.objects.all()
     return render(request, 'delete_session.html', {'sessions': sessions})
 
+#vinicius and Shoaibs work
 def delete_users_admin(request):
     if request.method == 'POST':
         # Get the email of the user to be deleted
         email = request.POST.get('email')
-        #print(f"Received email: {email}")  # add in case of error for debugging purposes
+        # add in case of error for debugging purposes
+        #print(f"Received email: {email}")
         if email:
             try:
                 # find the employee and email
                 employee = Employee.objects.get(email=email)
-                employee.delete()  # Delete the employee
+                # Delete the employee
+                employee.delete()
                 messages.success(request, 'User deleted successfully.')
             except Employee.DoesNotExist:
                 messages.error(request, 'No user found with that email.')
@@ -536,6 +503,7 @@ def delete_users_admin(request):
     users = Employee.objects.all()
     return render(request, 'delete_users_admin.html', {'users': users})
 
+#MEHDI WORK
 def profile_view(request):
     email = request.session.get('logged_in_email')
     if not email:
@@ -558,7 +526,7 @@ def profile_view(request):
         'departmentnumber': departmentnumber,
     })
 
-
+#MEHDI WORK
 def reset_password_request(request):
     # Check if user is logged in
     if not request.session.get('logged_in_email'):
@@ -577,6 +545,7 @@ def reset_password_request(request):
 
     return render(request, 'reset_password_request.html')
 
+#MEHDI WORK
 def reset_password_confirm(request):
     if not request.session.get('logged_in_email'):
         return redirect('login')
@@ -609,7 +578,7 @@ def reset_password_confirm(request):
     })
 
 
-# views.py
+#MEHDI WORK
 def password_recovery_request(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
@@ -623,7 +592,7 @@ def password_recovery_request(request):
             return redirect('password_recovery_request')
     return render(request, 'password_recovery_request.html')
 
-
+#MEHDI WORK
 def password_recovery_confirm(request):
     recovery_email = request.session.get('recovery_email')
 
@@ -651,3 +620,70 @@ def password_recovery_confirm(request):
             return redirect('password_recovery_request')
 
     return render(request, 'password_recovery_confirm.html')
+
+
+@login_required
+def voting_page(request, healthcard_id):
+    # Fetch the health card and its related questions
+    healthcard = get_object_or_404(HealthCard, id=healthcard_id)
+    questions = healthcard.questions.all()
+
+    if request.method == 'POST':
+        try:
+            # Call the function to store votes
+            store_votes(
+                employee=request.user.employee,  # Assuming Employee is linked to the logged-in user
+                healthcard=healthcard,
+                questions=questions,
+                post_data=request.POST
+            )
+
+            # Add a success message
+            messages.success(request, f"Thank you for voting on the health card: {healthcard.card_name}!")
+
+            # Redirect to the health card list page
+            return redirect('healthcard-list')  # Replace 'healthcard-list' with the actual URL name for the health card list page
+
+        except ValueError as e:
+            # Handle validation errors (e.g., missing traffic light selection)
+            messages.error(request, str(e))
+            return redirect('voting_page', healthcard_id=healthcard_id)
+
+    # Render the voting page with the health card and questions
+    return render(request, 'vote/voting.html', {
+        'healthcard': healthcard,
+        'questions': questions
+    })
+
+from .models import Vote
+
+def store_votes(employee, healthcard, questions, post_data):
+    """
+    Stores votes in the database for the given employee, healthcard, and questions.
+
+    Args:
+        employee: The employee submitting the votes.
+        healthcard: The health card being voted on.
+        questions: The list of questions related to the health card.
+        post_data: The POST data from the form submission.
+    """
+    for question in questions:
+        traffic_light = post_data.get(f'traffic_light_{question.id}')
+        comment = post_data.get(f'comment_{question.id}', '').strip()
+        actions = post_data.get(f'actions_{question.id}', '').strip()
+        solution = post_data.get(f'solution_{question.id}', '').strip()
+
+        # Ensure traffic light is selected (mandatory)
+        if not traffic_light:
+            raise ValueError(f"Traffic light not selected for question: {question.text}")
+
+        # Save the vote to the database
+        Vote.objects.create(
+            employee=employee,
+            healthcard=healthcard,
+            question=question,
+            traffic_light=traffic_light,
+            comment=comment,  # Optional
+            actions=actions,  # Optional
+            solution=solution  # Optional
+        )

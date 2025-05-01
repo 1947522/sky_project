@@ -21,9 +21,11 @@ urlpatterns = [
     path('', RedirectView.as_view(url='home/')),
     path('healthcheck/', views.healthcard_list, name='healthcard-list'),
     path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'),
+    path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'),
+    path('healthcheck/<int:card_id>/questions/', views.healthcard_vote, name='healthcard_questions_vote'),  # Add this line
     path('home/', views.home_view, name='home'),
     path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
-    path("healthcheck/<int:healthcard_id>/questions/", views.healthcard_questions_vote, name="healthcard_questions_vote"),
+    #path("healthcheck/<int:healthcard_id>/questions/", views.healthcard_questions_vote, name="healthcard_questions_vote"),
     path("thank-you/", views.thank_you_page, name="thank_you_page"),
     path('delete_users_admin/', views.delete_users_admin, name='delete_users_admin'),
     path('', RedirectView.as_view(url='/login/', permanent=False)),

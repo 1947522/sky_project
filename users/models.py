@@ -2,16 +2,20 @@ from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
-
+#https://docs.djangoproject.com/en/3.0/topics/db/models/
+#https://docs.djangoproject.com/en/5.1/ref/contrib/auth/
+#https://stackoverflow.com/questions/2432489/django-overwrite-form-clean-method
+#vinicius and Shoaibs work
 class Employee(models.Model):
     roles = [
+        #creates all the fields in the table called employee
         ('engineer', 'Engineer'),
         ('teamleader', 'Team Leader'),
         ('departmentleader', 'Department Leader'),
         ('seniormanager', 'Senior Manager'),
         ('admin', 'Admin'),
     ]
-
+#different attributes
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=100)
     teamnumber = models.CharField(max_length=50)
@@ -22,17 +26,22 @@ class Employee(models.Model):
 
 
     def clean(self):
+        #validation error for ending with @sky.net
         if not self.email.endswith('@sky.net'):
             raise ValidationError('Email must end with @sky.net')
+        #calls parent class clean
         super().clean()
 
     def set_password(self, raw_password):
+        #hashingf of plain text password. sotred in models
         self.password = make_password(raw_password)
 
     def check_password(self, raw_password):
+        #returns tryue if hashed and unhashed are the same
         return check_password(raw_password, self.password)
 
     def __str__(self):
+        #object is then represented as a string. makes it readable/legible
         return self.email
     
 class Department(models.Model):
@@ -122,24 +131,34 @@ class Vote(models.Model):
 
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='votes')
     healthcard = models.ForeignKey('HealthCard', on_delete=models.CASCADE, related_name='votes')
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='votes')  # Link to specific question
     traffic_light = models.CharField(max_length=6, choices=TRAFFIC_LIGHT_CHOICES)
-    progress = models.CharField(max_length=20, choices=PROGRESS_CHOICES)
-    comment = models.TextField(blank=True)
+    progress = models.CharField(max_length=20, choices=PROGRESS_CHOICES, blank=True, null=True)
+    comment = models.TextField(blank=True)  # User's comment
+    actions = models.TextField(blank=True)  # Actions the team can take
+    solution = models.TextField(blank=True)  # Proposed solution
     created_at = models.DateTimeField(default=timezone.now)
 
-    
-    # Add a field to track if this vote was created from question answers
-    is_from_questions = models.BooleanField(default=False)
-
     def __str__(self):
-        return f"{self.employee.name} - {self.healthcard.card_name} - {self.traffic_light} ({self.progress})"
+        return f"{self.employee.name} - {self.healthcard.card_name} - Q: {self.question.text[:30]} - {self.traffic_light}"
 
-
+#vinicius and Shoaibs work
 class VotingSession(models.Model):
     name = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
+    #automatically sets to current time stamp
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        #controls how votingsession is to be displayed
         return f"{self.name} ({self.start_date} - {self.end_date})"
+
+
+class HealthCardTermsAcceptance(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    healthcard = models.ForeignKey(HealthCard, on_delete=models.CASCADE)
+    accepted = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('employee', 'healthcard')

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!-- SHOAIB -->
 {% block content %}
 {% include 'admin_navbar.html' %}
 <div class="admin-container">
@@ -14,8 +14,10 @@
     {% endif %}
 
     <form method="POST">
+        <!-- security reasonings, random url endpoint-->
         {% csrf_token %}
         {{ form.as_p }}
+        <!--shortcut for rendering a django form-->
         <button type="submit">Create User</button>
     </form>
 </div>

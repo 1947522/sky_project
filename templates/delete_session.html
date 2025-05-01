@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!-- SHOAIB-->
 {% block content %}
 <div class="delete-users-container">
     <h2>Delete a Voting Session</h2>
@@ -17,10 +17,10 @@
         {% for session in sessions %}
             <li>
                 {{ session.name }} ({{ session.start_date }} - {{ session.end_date }})
-                <form method="POST" style="display:inline;">
+                <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="name" value="{{ session.name }}">
-                    <button type="submit">Delete</button>
+                    <button onclick="return confirm('Are you sure you want to delete this session?');">Delete</button>
                 </form>
             </li>
         {% endfor %}

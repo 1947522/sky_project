@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!-- SHOAIB -->
 {% block content %}
 <div class="admin-container">
     <h2>Create a Voting Session</h2>
@@ -13,7 +13,7 @@
 
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}  <!-- Render the form fields -->
+        {{ form.as_p }}
         <button type="submit">Create Session</button>
     </form>
 </div>

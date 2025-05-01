@@ -1,3 +1,4 @@
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f3f3f3;
@@ -24,31 +25,16 @@ header {
     max-width: 150px;
     height: auto;
 }
-
-.login-container {
-    background-color: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 400px; /* Set default width */
-    min-height: 500px; /* Set minimum height */
-    text-align: center;
-    box-sizing: border-box;
-    margin: 40px auto;
-    border: 1px solid #ddd;
-}
-
-
+.login-container,
 .signup-container {
-    background-color: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 420px;
-    text-align: center;
-    box-sizing: border-box;
-    margin-top: 60px;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fafafa;
     border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -62,17 +48,17 @@ input[type="password"],
 input[type="email"]{
     width: 100%;
     padding: 15px;
-    margin: 12px 0;
+    margin: 10px 0;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 15px;
     box-sizing: border-box;
 }
 
 button {
     width: 100%;
     padding: 12px;
-    background-color: #4A90E2;
+    background-color: #4292e8;
     border: none;
     border-radius: 5px;
     color: white;
@@ -82,9 +68,8 @@ button {
 }
 
 button:hover {
-    background-color: #357ABD;
+    background-color: #3680c8;
 }
-
 
 .homepage-container {
     text-align: center;

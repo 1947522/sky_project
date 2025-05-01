@@ -4,7 +4,9 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Sky Employee Hub - Terms</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .hero-section {
@@ -54,7 +56,6 @@
             <a class="nav-link" href="#">Profile</a>
           </li>
           <li class="nav-item">
-            {# Add logout link here if needed #}
             <a class="nav-link" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
               <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
@@ -106,8 +107,8 @@
       <div class="text-danger mb-3">*must accept terms and conditions</div>
 
       <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary me-2" onclick="window.location.href='{% url 'healthcard-list' %}'">Cancel</button>
-        <button class="btn btn-primary" disabled id="beginVotingBtn">Begin Voting</button>
+        <!-- Button to start voting (initially disabled) -->
+        <button id="beginVotingBtn" class="btn btn-primary" disabled>Begin Voting</button>
       </div>
     </div>
   </div>
@@ -118,18 +119,13 @@
   </div>
 
   <script>
-
     document.getElementById('acceptTerms').addEventListener('change', function() {
       document.getElementById('beginVotingBtn').disabled = !this.checked;
-
     });
 
     document.getElementById('beginVotingBtn').addEventListener('click', function() {
         // Corrected URL to point to the questions page using Django's url tag
-        window.location.href = "{% url 'healthcard_questions_vote' healthcard.id %}";
-
-    });
+        window.location.href = "{% url 'healthcard_vote' healthcard.id %}";    });
   </script>
 </body>
 </html>
-
