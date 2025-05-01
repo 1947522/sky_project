@@ -14,15 +14,15 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('admin_page/', views.admin_page, name='admin_page'),
 
-    path('departmentleader/', views.department_hub_view, name='departmentleader'),
+    path('departmentleader/', views.department_hub_view, name='departmentleader'),# Sheroz's work
     path('departments/', views.department_list, name='department-list'),
     path('departments/create/', views.department_create, name='department-create'),
-    path('vote/', views.vote_view, name='vote'),
+    path('vote/', views.vote_view, name='vote'), # Sheroz's work
     path('', RedirectView.as_view(url='home/')),
-    path('healthcheck/', views.healthcard_list, name='healthcard-list'),
-    path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'),
-    path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'),
-    path('healthcheck/<int:card_id>/questions/', views.healthcard_vote, name='healthcard_questions_vote'),  # Add this line
+    path('healthcheck/', views.healthcard_list, name='healthcard-list'), # Sheroz's work
+    path('healthcheck/<int:card_id>/terms/', views.healthcard_terms, name='healthcard-terms'), # Anes's work
+    path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard-vote'), # Sheroz's work
+    path('healthcheck/<int:card_id>/questions/', views.healthcard_vote, name='healthcard_questions_vote'),  # Anes's work
     path('home/', views.home_view, name='home'),
     path('healthcheck_voting/', views.healthcheck_voting_view, name='healthcheck_voting'),
     #path("healthcheck/<int:healthcard_id>/questions/", views.healthcard_questions_vote, name="healthcard_questions_vote"),
@@ -37,5 +37,5 @@ urlpatterns = [
     path('recovery/', views.password_recovery_request, name='password_recovery_request'),
     path('recovery/confirm/', views.password_recovery_confirm, name='password_recovery_confirm'),
 ]
-
+  
 

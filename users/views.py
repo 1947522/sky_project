@@ -4,7 +4,7 @@ from django.contrib.messages import get_messages
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import EmployeeSignupForm, AdminUserCreationForm, DepartmentForm, VotingSessionForm
-from .models import Employee, Team, Department, HealthCard, VotingSession
+from .models import Employee, HealthCardTermsAcceptance, Team, Department, HealthCard, VotingSession
 
 
 #vinicius and Shoaibs work
@@ -39,7 +39,6 @@ def signup(request):
                 #gets the passwords that is going to be hashed in forms
                 employee.set_password(password)
                 #sets the boolean for registered to true
-                employee.registered = True
                 #commits changes to the database
                 employee.save()
                 #sends a success message on screen
@@ -64,34 +63,17 @@ def login_view(request):
         password = request.POST.get('password')
 
         try:
-            #gets through models
             employee = Employee.objects.get(email=email)
-            #checks to see if email ends with @sky.net
-            if not employee.email.endswith('@sky.net'):
-                messages.error(request, 'Invalid email domain.')
-                return redirect('login')
-            #boolean for employee
-            if not employee.registered:
-                messages.error(request, 'Employee is not registered yet.')
-                return redirect('login')
-            #checks emails
             if employee.check_password(password):
                 request.session['logged_in_email'] = employee.email
+                request.session['employee_id'] = employee.id #Added By Sheroz to  Ensure employee ID is stored in session otherwise user could not vote
                 request.session['role'] = employee.role
                 messages.success(request, 'Login successful.')
-                #checks the role of the employee and redirects to pages that match
-                if employee.role == 'admin':
-                    return redirect('admin_page')
-                else:
-                    return redirect('home')
-
+                return redirect('home')
             else:
                 messages.error(request, 'Incorrect password.')
-                return redirect('login')
-
         except Employee.DoesNotExist:
             messages.error(request, 'No employee found with that email.')
-            return redirect('login')
 
     return render(request, 'login.html')
 
@@ -135,51 +117,67 @@ def home_view(request):
             'name': employee.name,
             'role': employee.role,
         })
-
+# Sheroz's work
+# This view is for the department hub, where department leaders can manage their teams and departments.
 def department_hub_view(request):
+    # Retrieve the logged-in user's email from the session
     email = request.session.get('logged_in_email')
     if not email:
+        # Redirect to login if no email is found in the session
         return redirect('login')
 
     try:
+        # Fetch the employee object using the email
         employee = Employee.objects.get(email=email)
 
+        # Check if the logged-in user is a department leader
         if employee.role.lower() != 'departmentleader':
+            # If not a department leader, deny access and redirect to login
             messages.error(request, 'Access denied: not a Department Leader.')
             return redirect('login')
 
+        # Get the department number of the logged-in user
         user_department_id = employee.departmentnumber
+        # Fetch all departments from the database
         departments = Department.objects.all()
 
+        # Initialize variables for selected department, team, and teams list
         selected_department = None
         selected_team = None
         teams = []
         show_teams = False  # Flag to indicate if teams should be shown
 
+        # Handle POST requests (e.g., when a department or team is selected)
         if request.method == 'POST':
+            # Get the selected department and team IDs from the POST data
             department_id = request.POST.get('departmentId')
             team_id = request.POST.get('teamId')
 
             if department_id:
+                # Fetch the selected department based on the department ID
                 selected_department = Department.objects.filter(departmentId=department_id).first()
 
-                # Show teams only if selected department is user's own
+                # Show teams only if the selected department matches the user's department
                 if str(selected_department.departmentId) == str(user_department_id):
+                    # Fetch teams belonging to the selected department
                     teams = Team.objects.filter(department=selected_department)
                     show_teams = True
 
             if team_id and show_teams:
+                # Fetch the selected team based on the team ID
                 selected_team = Team.objects.filter(teamId=team_id).first()
 
+        # Render the department hub template with the required context
         return render(request, 'department_hub.html', {
-            'departments': departments,
-            'teams': teams,
-            'selected_department': selected_department,
-            'selected_team': selected_team,
-            'show_teams': show_teams
+            'departments': departments,  # List of all departments
+            'teams': teams,  # List of teams in the selected department
+            'selected_department': selected_department,  # Currently selected department
+            'selected_team': selected_team,  # Currently selected team
+            'show_teams': show_teams  # Flag to indicate if teams should be displayed
         })
 
     except Employee.DoesNotExist:
+        # Handle case where the logged-in user is not found in the database
         messages.error(request, 'User not found.')
         return redirect('login')
 
@@ -196,34 +194,42 @@ def department_create(request):
         return redirect('department-list')
     return render(request, 'department_form.html', {'form': form})
 
-
+# Anes and Sheroz's work
+# This view allows engineers and team leaders to vote on health cards for their team.
 def vote_view(request):
+    # Retrieve the logged-in user's email from the session
     email = request.session.get('logged_in_email')
     if not email:
-        return redirect('login')  # Redirect to login if no session email
+        # Redirect to login if no email is found in the session
+        return redirect('login')
 
     try:
-        # Get logged-in employee
+        # Fetch the employee object using the email
         employee = Employee.objects.get(email=email)
 
-        # Allow only engineers and teamleaders to vote
+        # Restrict voting to engineers and team leaders only
         if employee.role not in ['engineer', 'teamleader']:
+            # Display an error message if the user doesn't have permission to vote
             messages.error(request, "You don't have permission to vote on healthcards.")
             return redirect('login')
 
-        # Get the team the employee belongs to (this will be their default team)
+        # Fetch the team the employee belongs to
         team = Team.objects.get(teamId=employee.teamnumber)
 
-        # Get relevant healthcards for the team
+        # Retrieve all health cards associated with the employee's team
         team_healthcards = HealthCard.objects.filter(team__teamId=employee.teamnumber)
 
         if request.method == 'POST':
+            # Handle form submission for voting
             for card in team_healthcards:
+                # Retrieve the traffic light, progress, and comment values for each health card
                 traffic_light = request.POST.get(f'traffic_light_{card.id}')
                 progress = request.POST.get(f'progress_{card.id}')
                 comment = request.POST.get(f'comment_{card.id}', '')
 
+                # Ensure traffic light and progress are provided before saving the vote
                 if traffic_light and progress:
+                    # Create a new vote record in the database
                     Vote.objects.create(
                         employee=employee,
                         healthcard=card,
@@ -232,17 +238,20 @@ def vote_view(request):
                         comment=comment
                     )
 
+            # Display a success message after votes are submitted
             messages.success(request, "Your votes have been submitted successfully!")
-            return redirect('healthcheck')  # Use correct name from urls.py
+            # Redirect to the health check page (update the URL name if needed)
+            return redirect('healthcheck')
 
-        # GET request — render voting page with the default team displayed
+        # Handle GET requests — render the voting page with the default team and health cards
         return render(request, 'vote/voting.html', {
-            'employee': employee,
+            'employee': employee,  # Pass the logged-in employee's details
             'team': team,  # Pass the team context to display the default team
-            'healthcards': team_healthcards,
+            'healthcards': team_healthcards,  # Pass the health cards for the team
         })
 
     except Employee.DoesNotExist:
+        # Handle case where the logged-in user is not found in the database
         messages.error(request, "Employee not found.")
         return redirect('login')
 
@@ -262,134 +271,32 @@ def healthcard_vote(request, card_id): #sheroz work
     # Add your logic for voting
     return render(request, 'vote/voting.html', {'healthcard': healthcard})
 
-
+#Sheroz's work
 def healthcard_terms(request, card_id):
-    # Get employee ID from session
-    employee_id = request.session.get('employee_id')  # Adjust to your auth system
-    if not employee_id:
-        # Handle case where employee_id is not found in session
-        return redirect('login')  # Or wherever you'd like to redirect if not logged in
+    email = request.session.get('logged_in_email')
+    if not email:
+        messages.error(request, 'Please log in to continue.')
+        return redirect('login')
 
-    # Fetch employee and health card objects
-    employee = get_object_or_404(Employee, id=employee_id)
-    healthcard = get_object_or_404(HealthCard, id=card_id)
+    try:
+        employee = Employee.objects.get(email=email)
+        healthcard = HealthCard.objects.get(id=card_id)
 
-    # Check if the employee has already accepted the terms for this health card
-    existing_acceptance = HealthCardTermsAcceptance.objects.filter(employee=employee, healthcard=healthcard).first()
-
-    if existing_acceptance and existing_acceptance.accepted:
-        return redirect('healthcard_list')  # Redirect if terms are already accepted
-
-    if request.method == 'POST':
-        # Save acceptance only if it doesn't already exist
-        if not existing_acceptance:
-            HealthCardTermsAcceptance.objects.create(
+        if request.method == 'POST':
+            # Save the acceptance in the database
+            HealthCardTermsAcceptance.objects.update_or_create(
                 employee=employee,
                 healthcard=healthcard,
-                accepted=True
+                defaults={'accepted': True}
             )
-        return redirect('healthcard_list')  # Redirect after POST
+            # Redirect to the voting page
+            return redirect('healthcard_vote', card_id=card_id)
 
-    # Render the terms page
-    return render(request, 'vote/terms_and_condi.html', {
-        'healthcard': healthcard,
-        'existing_acceptance': existing_acceptance,  # Optional: To show acceptance status in the template
-    })
+        return render(request, 'vote/terms_and_condi.html', {'healthcard': healthcard})
 
-
-# def healthcard_questions_vote(request, healthcard_id):  # anes work
-#     employee_id = request.session.get("employee_id")
-#     logger.info(f"Entering healthcard_questions_vote for employee {employee_id}, healthcard {healthcard_id}")
-#
-#     employee = get_object_or_404(Employee, id=employee_id)
-#     healthcard = get_object_or_404(HealthCard, id=healthcard_id)
-#     questions = Question.objects.filter(healthcard=healthcard).order_by("id")
-#
-#     # Role check
-#     if employee.role not in ["engineer", "teamleader"]:
-#         messages.error(request, "You don't have permission to vote.")
-#         return redirect("healthcard-list")
-#
-#     # Team match check
-#     if healthcard.team.teamId != employee.teamnumber:
-#         messages.error(request, "You can only vote on healthcards for your team.")
-#         return redirect("healthcard-list")
-#
-#     # Already voted check
-#     existing_answers = Answer.objects.filter(employee=employee, question__healthcard=healthcard)
-#     if existing_answers.exists():
-#         messages.info(request, f"You have already submitted answers for {healthcard.card_name}.")
-#         return redirect("healthcard-list")
-#
-#     if request.method == "POST":
-#         # Terms acceptance check
-#         if not request.POST.get("accept_terms"):
-#             messages.error(request, "You must accept the terms and conditions before proceeding.")
-#             return render(request, "vote/question_vote.html", {
-#                 "healthcard": healthcard,
-#                 "questions": questions,
-#                 "employee": employee,
-#                 "submitted_data": request.POST
-#             })
-#
-#         answers_data = {}
-#         valid_submission = True
-#
-#         # Optional: prepare question map to avoid multiple DB hits
-#         question_map = {q.id: q for q in questions}
-#
-#         for question in questions:
-#             answer_key = f"answer_q_{question.id}"
-#             answer_value = request.POST.get(answer_key)
-#
-#             if not answer_value or answer_value not in dict(Answer.TRAFFIC_LIGHT_CHOICES):
-#                 valid_submission = False
-#                 messages.error(
-#                     request,
-#                     f"Please select an answer for all questions. Missing or invalid answer for: '{question.text[:50]}...'"
-#                 )
-#                 break
-#
-#             answers_data[question.id] = answer_value
-#
-#         if valid_submission:
-#             try:
-#                 with transaction.atomic():
-#                     for question_id, traffic_light_value in answers_data.items():
-#                         question = question_map.get(question_id)
-#                         Answer.objects.create(
-#                             employee=employee,
-#                             question=question,
-#                             traffic_light=traffic_light_value,
-#                             created_at=timezone.now()
-#                         )
-#                 messages.success(
-#                     request,
-#                     f"Your answers for '{healthcard.card_name}' have been submitted successfully!"
-#                 )
-#                 return redirect("healthcard-list")
-#             except Exception as e:
-#                 logger.exception(f"Error saving answers for employee {employee.id} on healthcard {healthcard.id}: {e}")
-#                 messages.error(
-#                     request,
-#                     "An unexpected error occurred while saving your answers. Please try again later."
-#                 )
-#                 raise
-#
-#         # Form had errors; re-render with submitted data
-#         return render(request, "vote/question_vote.html", {
-#             "healthcard": healthcard,
-#             "questions": questions,
-#             "employee": employee,
-#             "submitted_data": request.POST
-#         })
-#
-#     # GET request: show form
-#     return render(request, "vote/question_vote.html", {
-#         "healthcard": healthcard,
-#         "questions": questions,
-#         "employee": employee
-#     })
+    except (Employee.DoesNotExist, HealthCard.DoesNotExist):
+        messages.error(request, 'Health card or employee not found.')
+        return redirect('healthcard-list')
 
 
 def thank_you_page(request): #anes work
@@ -397,11 +304,17 @@ def thank_you_page(request): #anes work
 
 #VINICIUS WORK
 def healthcheck_voting_view(request):
-    #Get the logged in users email from the session
+    # Log session data for debugging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Session data: {request.session.items()}")
+
+    # Get the logged-in user's email and employee ID from the session
     email = request.session.get('logged_in_email')
+    employee_id = request.session.get('employee_id') # Added By Sheroz : Cause user could not vore enven after login as enggineer or team leader
 
     # If not logged in, redirect to the login page with an error message
-    if not email:
+    if not email or not employee_id:
         messages.error(request, 'Please log in to continue.')
         return redirect('login')
 
@@ -688,3 +601,12 @@ def store_votes(employee, healthcard, questions, post_data):
             actions=actions,  # Optional
             solution=solution  # Optional
         )
+
+# filepath: c:\Users\shekhroz\OneDrive\Documents\GitHub\sky_project\users\urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Other URL patterns...
+    path('healthcheck/<int:card_id>/vote/', views.healthcard_vote, name='healthcard_vote'),  # Ensure this exists
+]

@@ -26,20 +26,27 @@ class AdminUserCreationForm(forms.ModelForm):
         model = Employee
         #all the fields fdrom that model
         fields = ['name', 'email', 'teamnumber', 'departmentnumber', 'role']
-
+#Anes's work
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
         fields = ['departmentName']
-
+# Sheroz's work
+# This form is used for submitting votes on health cards.
 class VoteForm(forms.ModelForm):
     class Meta:
+        # Specifies the model that this form is based on
         model = Vote
+        # Specifies the fields from the model to include in the form
         fields = ['traffic_light', 'progress', 'comment']
+        # Customizes the widgets for the form fields
         widgets = {
-            'traffic_light': forms.RadioSelect,
-            'progress': forms.Select,
-            'comment': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Optional comment...'})
+            'traffic_light': forms.RadioSelect,  # Displays traffic_light as radio buttons
+            'progress': forms.Select,  # Displays progress as a dropdown menu
+            'comment': forms.Textarea(attrs={
+                'rows': 2,  # Sets the number of rows for the textarea
+                'placeholder': 'Optional comment...'  # Adds a placeholder text for the comment field
+            })
         }
 #vinicius work
 class VotingSessionForm(forms.ModelForm):
